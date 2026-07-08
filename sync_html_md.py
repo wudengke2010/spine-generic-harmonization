@@ -35,7 +35,7 @@ replacements = [
 
     # 6. Data Availability
     ('Full analysis code, raw and harmonized biomarker tables, and figure-generation scripts will be deposited in a public repository upon publication.',
-     'All processing scripts, harmonization implementations, evaluation code, and figure-generation pipelines are archived at https://github.com/yilinzhu/spine-generic-harmonization (DOI: 10.5281/zenodo.XXXXXXX). Raw and harmonized biomarker tables are provided as Supplementary Table S1 and in the same repository.'),
+     'All processing scripts, harmonization implementations, evaluation code, and figure-generation pipelines are archived at https://github.com/wudengke2010/spine-generic-harmonization (DOI: 10.5281/zenodo.21264267). Raw and harmonized biomarker tables are provided as Supplementary Table S1 and in the same repository.'),
 
     # 7. Figure references - update cross-references
     ('Figures 1a and 1b', 'Figure 1'),

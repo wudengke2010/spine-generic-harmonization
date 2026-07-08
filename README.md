@@ -86,7 +86,7 @@ If you use this code or data, please cite:
   author = {Zhu, Yilin and Wu, Dengke},
   title  = {Spine-Generic QMRI Harmonization},
   year   = {2026},
-  doi    = {10.5281/zenodo.XXXXXXX},
+  doi    = {10.5281/zenodo.21264267},
   url    = {https://github.com/wudengke2010/spine-generic-harmonization}
 }
 ```
