@@ -87,7 +87,7 @@ If you use this code or data, please cite:
   title  = {Spine-Generic QMRI Harmonization},
   year   = {2026},
   doi    = {10.5281/zenodo.XXXXXXX},
-  url    = {https://github.com/yilinzhu/spine-generic-harmonization}
+  url    = {https://github.com/wudengke2010/spine-generic-harmonization}
 }
 ```
 
@@ -99,5 +99,5 @@ If you use this code or data, please cite:
 
 ## Contact
 
-- **Yilin Zhu** — Department of Emergency Surgery, Changsha Hospital of Traditional Chinese Medicine
-- **Dengke Wu** (corresponding) — Department of Orthopedics, Xiangya Hospital, Central South University — wudengke@csu.edu.cn
+- **Yilin Zhu** — Changsha Hospital of Traditional Chinese Medicine (Changsha No. 8 Hospital), Changsha City, Hunan Province, China
+- **Dengke Wu** (corresponding) — Department of Emergency Medicine, and Emergency Medicine and Difficult Diseases Institute, The Second Xiangya Hospital of Central South University, Changsha 410011, Hunan, China — wudk2010@csu.edu.cn
