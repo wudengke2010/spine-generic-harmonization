@@ -1,0 +1,6 @@
+,voxel_dx,voxel_dx,voxel_dy,voxel_dy,voxel_dz,voxel_dz
+,mean,std,mean,std,mean,std
+vendor,,,,,,
+GE,0.438,0.0,0.438,0.0,5.0,0.0
+Philips,0.5,0.0,0.5,0.0,5.0,0.0
+Siemens,0.492,0.02,0.492,0.02,5.0,0.0

@@ -1,0 +1,44 @@
+\documentclass[11pt,a4paper]{letter}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+
+\signature{Dengke Wu, M.D.\\
+Department of Emergency Surgery\\
+Xiangya Hospital, Central South University\\
+87 Xiangya Road, Changsha 410008, Hunan, China\\
+Email: \texttt{wudengke@csu.edu.cn}}
+\address{Department of Emergency Surgery\\
+Xiangya Hospital, Central South University\\
+87 Xiangya Road, Changsha 410008\\
+Hunan Province, China}
+
+\begin{document}
+
+\begin{letter}{Editorial Office\\
+Scientific Reports\\
+Springer Nature\\
+London, United Kingdom}
+
+\opening{Dear Editor,}
+
+We are pleased to submit our manuscript entitled \textbf{``Impact of Scanner Vendor Harmonization on Spinal Cord Quantitative MRI Biomarkers: A Systematic Benchmark of Five Statistical Correction Strategies''} for consideration as a Research Article in \textit{Scientific Reports}.
+
+\textbf{Background and gap.} Quantitative MRI (qMRI) biomarkers of the spinal cord---cross-sectional area, magnetization transfer ratio, and diffusion tensor metrics---are increasingly adopted in multi-center clinical trials for multiple sclerosis, degenerative cervical myelopathy, and spinal cord injury. However, scanner vendor differences introduce systematic variability that can exceed biological effect sizes, undermining pooled analyses. While statistical harmonization methods such as ComBat have been validated for brain imaging, no prior study has systematically benchmarked multiple harmonization strategies on spinal cord qMRI using a unified, multi-endpoint evaluation framework.
+
+\textbf{What we did.} Using the openly available spine-generic multi-subject dataset (267 subjects, 44 sites, 3 scanner vendors), we extracted eight qMRI biomarkers spanning four acquisition families (T2w, T2*, MT, DTI) and compared five harmonization methods---per-metric ComBat, ComBat-joint, CovBat, RELIEF, and a linear mixed-effects / fixed-effects (LME/FE) hybrid---across three complementary endpoints: residual vendor effect ($\eta^2$, ICC, PERMANOVA $R^2$), biological-signal recovery (age/sex semi-partial $R^2$), and subject-level preservation (pre--post Pearson $r$).
+
+\textbf{Key findings.} All five methods reduced vendor $\eta^2$ by $>$99.8\% and rendered multivariate vendor structure non-significant (all $p \geq 0.97$), while concurrently increasing age-related signal 2.3--3.7-fold. Critically, methods diverged on subject-level preservation, forming a reproducible Pareto frontier: LME/FE achieved the highest individual-subject fidelity ($r = 0.84$), whereas CovBat prioritized group-level distribution matching at the cost of individual preservation ($r = 0.78$). These results yield a practical decision framework: method selection should be guided by the downstream analytic goal rather than a single universal default.
+
+\textbf{Significance and fit.} This work provides the first multi-method, multi-biomarker, multi-endpoint benchmark for spinal cord qMRI harmonization, translating methodological advances into actionable guidance for the growing multi-center spinal cord imaging community. The use of a fully open dataset and standardized processing pipeline (Spinal Cord Toolbox) ensures reproducibility. We believe the study's methodological rigor, broad relevance to neuroimaging and clinical trial design, and open-science alignment make it well suited for \textit{Scientific Reports}.
+
+\textbf{Declarations.} This manuscript is original, has not been published elsewhere, and is not under consideration by any other journal. All authors have approved the submission. The study used only publicly available, de-identified data; no new human subject data were collected, and no additional ethics approval was required for this secondary analysis. The authors declare no competing interests. This work was supported by the Chronic Disease Management Research Project of the National Health Commission Capacity Building and Continuing Education Center (Grant No.~GWJJMB202510024181) and the Health and Medical Science Research Project of Hunan Province (Grant No.~20256759).
+
+We thank you for your time and consideration and look forward to your response.
+
+\closing{Sincerely yours,}
+
+\end{letter}
+
+\end{document}
