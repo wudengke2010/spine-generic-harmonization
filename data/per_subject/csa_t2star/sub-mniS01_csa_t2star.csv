@@ -1,0 +1,2 @@
+participant_id,n_valid_slices,SC_CSA_mm2,GM_CSA_mm2,WM_CSA_mm2,GM_WM_ratio,GM_SC_frac,voxel_dx,voxel_dy,voxel_dz
+sub-mniS01,15,81.4667,16.3667,65.3000,0.2506,0.2009,0.500,0.500,5.000

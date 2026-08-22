@@ -1,0 +1,2 @@
+participant_id,n_valid_slices,SC_CSA_mm2,GM_CSA_mm2,WM_CSA_mm2,GM_WM_ratio,GM_SC_frac,voxel_dx,voxel_dy,voxel_dz
+sub-fslAchieva05,15,70.8000,13.9833,56.8167,0.2461,0.1975,0.500,0.500,5.000

@@ -1,0 +1,2 @@
+participant_id,n_valid_slices,SC_CSA_mm2,GM_CSA_mm2,WM_CSA_mm2,GM_WM_ratio,GM_SC_frac,voxel_dx,voxel_dy,voxel_dz
+sub-milan07,15,71.3667,16.6333,54.9333,0.3028,0.2331,0.500,0.500,5.000

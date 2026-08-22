@@ -1,0 +1,2 @@
+participant_id,n_valid_slices,SC_CSA_mm2,GM_CSA_mm2,WM_CSA_mm2,GM_WM_ratio,GM_SC_frac,voxel_dx,voxel_dy,voxel_dz
+sub-tokyoIngenia01,15,85.2000,9.4833,75.7167,0.1252,0.1113,0.500,0.500,5.000

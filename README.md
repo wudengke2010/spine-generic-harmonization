@@ -16,6 +16,8 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 - 267 subjects, 44 sites, 3 vendors (GE, Philips, Siemens)
 - 8 qMRI biomarkers at C2–C3: T2w CSA, T2\* GM CSA, MTR, MTsat, FA, MD, AD, RD
 
+**Per-subject measurements** (`data/per_subject/`) are the direct SCT v7.4 output computed from the spine-generic derivatives: `csa_t2star/` holds one summary CSV per subject (SC/GM/WM CSA), and `csa_t2w/` holds the slice-level `sct_process_segmentation` output (per-slice area, angles, diameters). These are the raw inputs consumed by the analysis scripts in `code/`.
+
 ## Repository Structure
 
 ```
@@ -59,7 +61,10 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 │   ├── voxel_resolution_by_vendor.csv
 │   ├── lovo_vs_internal_comparison.csv  # LOVO vs internal-validation results
 │   ├── results_design_C.csv        # Design C balanced-subsample bootstrap results
-│   └── summary_design_C.csv        # Design C summary statistics
+│   ├── summary_design_C.csv        # Design C summary statistics
+│   └── per_subject/                # Per-subject SCT output (raw measurements)
+│       ├── csa_t2star/             # 267 files: sub-*_csa_t2star.csv (subject-level T2* CSA)
+│       └── csa_t2w/                # 263 files: sub-*_csa.csv (slice-level T2w SCT output)
 ├── figures/                        # All manuscript figures (PNG + PDF)
 │   ├── Fig1_study_design_v3.{png,pdf}
 │   ├── Fig2_baseline_effects.{png,pdf}

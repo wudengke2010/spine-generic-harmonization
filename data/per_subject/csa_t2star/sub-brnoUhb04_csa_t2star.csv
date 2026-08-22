@@ -1,0 +1,2 @@
+participant_id,n_valid_slices,SC_CSA_mm2,GM_CSA_mm2,WM_CSA_mm2,GM_WM_ratio,GM_SC_frac,voxel_dx,voxel_dy,voxel_dz
+sub-brnoUhb04,15,70.0547,14.8531,55.3802,0.2682,0.2120,0.438,0.438,5.000

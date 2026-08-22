@@ -1,0 +1,2 @@
+participant_id,n_valid_slices,SC_CSA_mm2,GM_CSA_mm2,WM_CSA_mm2,GM_WM_ratio,GM_SC_frac,voxel_dx,voxel_dy,voxel_dz
+sub-tokyo750w04,24,68.9896,12.2188,56.8958,0.2148,0.1771,0.500,0.500,5.000

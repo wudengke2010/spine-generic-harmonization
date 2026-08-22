@@ -1,0 +1,2 @@
+participant_id,n_valid_slices,SC_CSA_mm2,GM_CSA_mm2,WM_CSA_mm2,GM_WM_ratio,GM_SC_frac,voxel_dx,voxel_dy,voxel_dz
+sub-tokyoSkyra04,15,67.7667,13.5333,54.4333,0.2486,0.1997,0.500,0.500,5.000

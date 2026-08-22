@@ -1,0 +1,2 @@
+participant_id,n_valid_slices,SC_CSA_mm2,GM_CSA_mm2,WM_CSA_mm2,GM_WM_ratio,GM_SC_frac,voxel_dx,voxel_dy,voxel_dz
+sub-sherbrooke05,15,75.5667,13.2333,62.3333,0.2123,0.1751,0.500,0.500,5.000

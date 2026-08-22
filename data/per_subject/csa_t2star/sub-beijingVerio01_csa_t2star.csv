@@ -1,0 +1,2 @@
+participant_id,n_valid_slices,SC_CSA_mm2,GM_CSA_mm2,WM_CSA_mm2,GM_WM_ratio,GM_SC_frac,voxel_dx,voxel_dy,voxel_dz
+sub-beijingVerio01,15,72.5000,15.9667,57.0667,0.2798,0.2202,0.500,0.500,5.000

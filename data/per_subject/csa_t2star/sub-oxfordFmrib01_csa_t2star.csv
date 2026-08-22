@@ -1,0 +1,2 @@
+participant_id,n_valid_slices,SC_CSA_mm2,GM_CSA_mm2,WM_CSA_mm2,GM_WM_ratio,GM_SC_frac,voxel_dx,voxel_dy,voxel_dz
+sub-oxfordFmrib01,15,81.7833,17.1833,65.2333,0.2634,0.2101,0.500,0.500,5.000
