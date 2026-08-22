@@ -69,8 +69,8 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 │   ├── fig_lovo_validation.{png,pdf}
 │   └── FigS_design_C_robustness.{png,pdf}
 ├── paper/                          # Manuscript source files
-│   ├── spine_generic_harmonization_paper.tex
-│   └── cover_letter.tex
+│   ├── spine_generic_harmonization_paper.tex   # Final manuscript (LaTeX source)
+│   └── spine_generic_harmonization_paper.pdf
 ├── LICENSE                         # MIT License
 └── README.md                       # This file
 ```
