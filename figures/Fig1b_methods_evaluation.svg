@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560"
+     viewBox="0 0 1100 560">
+  <rect width="1100" height="560" fill="white"/>
+  <text x="550.0" y="32" font-weight="bold" font-family="Arial, sans-serif" font-size="18" fill="#222222" text-anchor="middle">Harmonization and Evaluation Framework</text>
+  <circle cx="40" cy="50" r="18" fill="#F5F5F5" stroke="#222222" stroke-width="2"/>
+  <text x="40" y="57" font-weight="bold" font-family="Arial, sans-serif" font-size="20" fill="#222222" text-anchor="middle">C</text>
+  <text x="72" y="52" font-weight="bold" font-family="Arial, sans-serif" font-size="15" fill="#222222" text-anchor="start">Harmonization Pipeline</text>
+  <rect x="40" y="65" width="110" height="110" rx="8" fill="#F5F5F5" stroke="#CCCCCC" stroke-width="1.5"/>
+  <text x="95.0" y="90" font-weight="bold" font-family="Arial, sans-serif" font-size="13" fill="#222222" text-anchor="middle">Input</text>
+  <text x="95.0" y="110" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">8 biomarkers</text>
+  <text x="95.0" y="125" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">267 subjects</text>
+  <text x="95.0" y="140" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">44 sites</text>
+  <line x1="150" y1="120.0" x2="175.0" y2="120.0" stroke="#222222" stroke-width="2.0" stroke-linecap="round"/>
+  <polygon points="185,120.0 175.0,125.0 175.0,115.0" fill="#222222"/>
+  <rect x="190" y="65" width="130" height="110" rx="8" fill="white" stroke="#CC79A7" stroke-width="2.0"/>
+  <rect x="192" y="67" width="126" height="5" rx="3" fill="#CC79A7" opacity="0.6"/>
+  <text x="255.0" y="93" font-weight="bold" font-family="Arial, sans-serif" font-size="13" fill="#CC79A7" text-anchor="middle">LME/FE</text>
+  <text x="255.0" y="115" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">Linear Mixed /</text>
+  <text x="255.0" y="129" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">Fixed Effects</text>
+  <line x1="320" y1="120.0" x2="326.0" y2="120.0" stroke="#AAAAAA" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="336,120.0 326.0,125.0 326.0,115.0" fill="#AAAAAA"/>
+  <rect x="336" y="65" width="130" height="110" rx="8" fill="white" stroke="#0072B2" stroke-width="2.0"/>
+  <rect x="338" y="67" width="126" height="5" rx="3" fill="#0072B2" opacity="0.6"/>
+  <text x="401.0" y="93" font-weight="bold" font-family="Arial, sans-serif" font-size="13" fill="#0072B2" text-anchor="middle">ComBat</text>
+  <text x="401.0" y="115" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">Empirical Bayes</text>
+  <text x="401.0" y="129" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">per metric</text>
+  <line x1="466" y1="120.0" x2="472.0" y2="120.0" stroke="#AAAAAA" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="482,120.0 472.0,125.0 472.0,115.0" fill="#AAAAAA"/>
+  <rect x="482" y="65" width="130" height="110" rx="8" fill="white" stroke="#56B4E9" stroke-width="2.0"/>
+  <rect x="484" y="67" width="126" height="5" rx="3" fill="#56B4E9" opacity="0.6"/>
+  <text x="547.0" y="93" font-weight="bold" font-family="Arial, sans-serif" font-size="13" fill="#56B4E9" text-anchor="middle">ComBat-joint</text>
+  <text x="547.0" y="115" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">Joint EB</text>
+  <text x="547.0" y="129" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">all 8 metrics</text>
+  <line x1="612" y1="120.0" x2="618.0" y2="120.0" stroke="#AAAAAA" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="628,120.0 618.0,125.0 618.0,115.0" fill="#AAAAAA"/>
+  <rect x="628" y="65" width="130" height="110" rx="8" fill="white" stroke="#E69F00" stroke-width="2.0"/>
+  <rect x="630" y="67" width="126" height="5" rx="3" fill="#E69F00" opacity="0.6"/>
+  <text x="693.0" y="93" font-weight="bold" font-family="Arial, sans-serif" font-size="13" fill="#E69F00" text-anchor="middle">RELIEF</text>
+  <text x="693.0" y="115" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">ICA + BH-FDR</text>
+  <text x="693.0" y="129" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">components</text>
+  <line x1="758" y1="120.0" x2="764.0" y2="120.0" stroke="#AAAAAA" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="774,120.0 764.0,125.0 764.0,115.0" fill="#AAAAAA"/>
+  <rect x="774" y="65" width="130" height="110" rx="8" fill="white" stroke="#009E73" stroke-width="2.0"/>
+  <rect x="776" y="67" width="126" height="5" rx="3" fill="#009E73" opacity="0.6"/>
+  <text x="839.0" y="93" font-weight="bold" font-family="Arial, sans-serif" font-size="13" fill="#009E73" text-anchor="middle">CovBat</text>
+  <text x="839.0" y="115" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">PCA + ComBat</text>
+  <text x="839.0" y="129" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">covariance</text>
+  <line x1="904" y1="120.0" x2="919.0" y2="120.0" stroke="#222222" stroke-width="2.0" stroke-linecap="round"/>
+  <polygon points="929,120.0 919.0,125.0 919.0,115.0" fill="#222222"/>
+  <rect x="929" y="65" width="100" height="110" rx="8" fill="#E8F5E9" stroke="#009E73" stroke-width="2.0"/>
+  <text x="979.0" y="90" font-weight="bold" font-family="Arial, sans-serif" font-size="13" fill="#009E73" text-anchor="middle">Output</text>
+  <text x="979.0" y="110" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">5 harmonized</text>
+  <text x="979.0" y="125" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">datasets</text>
+  <line x1="550.0" y1="180" x2="550.0" y2="210.0" stroke="#222222" stroke-width="2.5" stroke-linecap="round"/>
+  <polygon points="550.0,220 545.0,210.0 555.0,210.0" fill="#222222"/>
+  <rect x="410.0" y="187" width="280" height="24" rx="12" fill="white" stroke="#CCCCCC" stroke-width="1"/>
+  <text x="550.0" y="203" font-weight="bold" font-family="Arial, sans-serif" font-size="11" fill="#222222" text-anchor="middle">All outputs are evaluated by four orthogonal endpoints</text>
+  <circle cx="40" cy="242" r="18" fill="#F5F5F5" stroke="#222222" stroke-width="2"/>
+  <text x="40" y="249" font-weight="bold" font-family="Arial, sans-serif" font-size="20" fill="#222222" text-anchor="middle">D</text>
+  <text x="72" y="244" font-weight="bold" font-family="Arial, sans-serif" font-size="15" fill="#222222" text-anchor="start">Orthogonal Evaluation Endpoints</text>
+  <line x1="550.0" y1="225" x2="160.0" y2="260" stroke="#D55E00" stroke-width="1.2" opacity="0.5" stroke-dasharray="4,4"/>
+  <line x1="159.9" y1="260" x2="159.90000499962503" y2="260.0004999625031" stroke="#D55E00" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="160.0,270 154.90025498087658,260.0504974626906 164.89975501837347,259.9505024623156" fill="#D55E00"/>
+  <rect x="40.0" y="270" width="240" height="130" rx="10" fill="white" stroke="#D55E00" stroke-width="2.0"/>
+  <rect x="42.0" y="272" width="236" height="5" rx="3" fill="#D55E00" opacity="0.6"/>
+  <text x="160.0" y="298" font-weight="bold" font-family="Arial, sans-serif" font-size="16" fill="#D55E00" text-anchor="middle">Vendor η²</text>
+  <text x="160.0" y="320" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">Univariate vendor effect</text>
+  <rect x="105.0" y="330" width="110" height="18" rx="9" fill="#D55E00" opacity="0.12"/>
+  <text x="160.0" y="342" font-family="Arial, sans-serif" font-size="10" fill="#D55E00" text-anchor="middle">Lower = better</text>
+  <line x1="70.0" y1="355" x2="250.0" y2="355" stroke="#CCCCCC" stroke-width="0.8"/>
+  <text x="160.0" y="373" font-family="Arial, sans-serif" font-size="10" fill="#777777" text-anchor="middle">Residual per-biomarker vendor bias</text>
+  <line x1="550.0" y1="225" x2="420.0" y2="260" stroke="#0072B2" stroke-width="1.2" opacity="0.5" stroke-dasharray="4,4"/>
+  <line x1="419.9" y1="260" x2="419.900004999625" y2="260.0004999625031" stroke="#0072B2" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="420.0,270 414.9002549808766,260.0504974626906 424.89975501837347,259.9505024623156" fill="#0072B2"/>
+  <rect x="300.0" y="270" width="240" height="130" rx="10" fill="white" stroke="#0072B2" stroke-width="2.0"/>
+  <rect x="302.0" y="272" width="236" height="5" rx="3" fill="#0072B2" opacity="0.6"/>
+  <text x="420.0" y="298" font-weight="bold" font-family="Arial, sans-serif" font-size="16" fill="#0072B2" text-anchor="middle">PERMANOVA R²</text>
+  <text x="420.0" y="320" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">Multivariate vendor effect</text>
+  <rect x="365.0" y="330" width="110" height="18" rx="9" fill="#0072B2" opacity="0.12"/>
+  <text x="420.0" y="342" font-family="Arial, sans-serif" font-size="10" fill="#0072B2" text-anchor="middle">Lower = better</text>
+  <line x1="330.0" y1="355" x2="510.0" y2="355" stroke="#CCCCCC" stroke-width="0.8"/>
+  <text x="420.0" y="373" font-family="Arial, sans-serif" font-size="10" fill="#777777" text-anchor="middle">Joint 8-biomarker vendor structure</text>
+  <line x1="550.0" y1="225" x2="680.0" y2="260" stroke="#009E73" stroke-width="1.2" opacity="0.5" stroke-dasharray="4,4"/>
+  <line x1="679.9" y1="260" x2="679.900004999625" y2="260.0004999625031" stroke="#009E73" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="680.0,270 674.9002549808766,260.0504974626906 684.8997550183734,259.9505024623156" fill="#009E73"/>
+  <rect x="560.0" y="270" width="240" height="130" rx="10" fill="white" stroke="#009E73" stroke-width="2.0"/>
+  <rect x="562.0" y="272" width="236" height="5" rx="3" fill="#009E73" opacity="0.6"/>
+  <text x="680.0" y="298" font-weight="bold" font-family="Arial, sans-serif" font-size="16" fill="#009E73" text-anchor="middle">r_pre,post</text>
+  <text x="680.0" y="320" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">Per-subject rank</text>
+  <rect x="625.0" y="330" width="110" height="18" rx="9" fill="#009E73" opacity="0.12"/>
+  <text x="680.0" y="342" font-family="Arial, sans-serif" font-size="10" fill="#009E73" text-anchor="middle">Higher = better</text>
+  <line x1="590.0" y1="355" x2="770.0" y2="355" stroke="#CCCCCC" stroke-width="0.8"/>
+  <text x="680.0" y="373" font-family="Arial, sans-serif" font-size="10" fill="#777777" text-anchor="middle">Pre- vs post-harmonization correlation</text>
+  <line x1="550.0" y1="225" x2="940.0" y2="260" stroke="#E69F00" stroke-width="1.2" opacity="0.5" stroke-dasharray="4,4"/>
+  <line x1="939.9" y1="260" x2="939.900004999625" y2="260.0004999625031" stroke="#E69F00" stroke-width="1.5" stroke-linecap="round"/>
+  <polygon points="940.0,270 934.9002549808766,260.0504974626906 944.8997550183734,259.9505024623156" fill="#E69F00"/>
+  <rect x="820.0" y="270" width="240" height="130" rx="10" fill="white" stroke="#E69F00" stroke-width="2.0"/>
+  <rect x="822.0" y="272" width="236" height="5" rx="3" fill="#E69F00" opacity="0.6"/>
+  <text x="940.0" y="298" font-weight="bold" font-family="Arial, sans-serif" font-size="16" fill="#E69F00" text-anchor="middle">Age + Sex R²</text>
+  <text x="940.0" y="320" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">Biological signal</text>
+  <rect x="885.0" y="330" width="110" height="18" rx="9" fill="#E69F00" opacity="0.12"/>
+  <text x="940.0" y="342" font-family="Arial, sans-serif" font-size="10" fill="#E69F00" text-anchor="middle">Higher = better</text>
+  <line x1="850.0" y1="355" x2="1030.0" y2="355" stroke="#CCCCCC" stroke-width="0.8"/>
+  <text x="940.0" y="373" font-family="Arial, sans-serif" font-size="10" fill="#777777" text-anchor="middle">Age/sex variance recovery</text>
+</svg>

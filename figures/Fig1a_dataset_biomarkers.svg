@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680"
+     viewBox="0 0 1000 680">
+  <rect width="1000" height="680" fill="white"/>
+  <text x="500.0" y="32" font-weight="bold" font-family="Arial, sans-serif" font-size="18" fill="#222222" text-anchor="middle">Study Cohort and Quantitative MRI Biomarkers</text>
+  <rect x="30" y="60" width="940" height="230" rx="10" fill="#F5F5F5" stroke="#CCCCCC" stroke-width="1.5"/>
+  <circle cx="60" cy="92" r="18" fill="#F5F5F5" stroke="#222222" stroke-width="2"/>
+  <text x="60" y="99" font-weight="bold" font-family="Arial, sans-serif" font-size="20" fill="#222222" text-anchor="middle">A</text>
+  <text x="92" y="94" font-weight="bold" font-family="Arial, sans-serif" font-size="15" fill="#222222" text-anchor="start">Study Cohort</text>
+  <rect x="60" y="115" width="280" height="150" rx="8" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="1.5"/>
+  <text x="200.0" y="143" font-weight="bold" font-family="Arial, sans-serif" font-size="14" fill="#222222" text-anchor="middle">spine-generic dataset</text>
+  <text x="200.0" y="165" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">release r20240523</text>
+  <text x="200.0" y="187" font-family="Arial, sans-serif" font-size="11" fill="#222222" text-anchor="middle">267 subjects</text>
+  <text x="200.0" y="205" font-family="Arial, sans-serif" font-size="11" fill="#222222" text-anchor="middle">44 sites</text>
+  <text x="200.0" y="223" font-family="Arial, sans-serif" font-size="11" fill="#222222" text-anchor="middle">13 scanner models</text>
+  <text x="200.0" y="241" font-family="Arial, sans-serif" font-size="11" fill="#222222" text-anchor="middle">3 vendors</text>
+  <rect x="380" y="125" width="115" height="130" rx="8" fill="white" stroke="#CCCCCC" stroke-width="1.2"/>
+  <text x="437" y="151" font-weight="bold" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">HC</text>
+  <text x="437" y="183" font-weight="bold" font-family="Arial, sans-serif" font-size="26" fill="#222222" text-anchor="middle">188</text>
+  <text x="437" y="210" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">complete cases</text>
+  <rect x="510" y="125" width="115" height="130" rx="8" fill="white" stroke="#CCCCCC" stroke-width="1.2"/>
+  <text x="567" y="151" font-weight="bold" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">ALL</text>
+  <text x="567" y="183" font-weight="bold" font-family="Arial, sans-serif" font-size="26" fill="#222222" text-anchor="middle">246</text>
+  <text x="567" y="210" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">complete cases</text>
+  <text x="805.0" y="133" font-weight="bold" font-family="Arial, sans-serif" font-size="12" fill="#222222" text-anchor="middle">Vendor composition</text>
+  <rect x="660" y="145" width="40.18726591760299" height="28" fill="#2958A3" stroke="white" stroke-width="1"/>
+  <rect x="700.187265917603" y="145" width="54.30711610486891" height="28" fill="#6AAD4A" stroke="white" stroke-width="1"/>
+  <text x="727.3408239700375" y="155.0" font-weight="bold" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle">50</text>
+  <text x="727.3408239700375" y="167.0" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle">(19%)</text>
+  <rect x="754.4943820224719" y="145" width="195.5056179775281" height="28" fill="#D55E00" stroke="white" stroke-width="1"/>
+  <text x="852.2471910112359" y="155.0" font-weight="bold" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle">180</text>
+  <text x="852.2471910112359" y="167.0" font-family="Arial, sans-serif" font-size="9" fill="white" text-anchor="middle">(67%)</text>
+  <rect x="660" y="145" width="290" height="28" rx="4" fill="none" stroke="#222222" stroke-width="1.0"/>
+  <rect x="660" y="190" width="14" height="14" rx="3" fill="#2958A3"/>
+  <text x="680" y="201" font-family="Arial, sans-serif" font-size="10" fill="#222222" text-anchor="start">GE</text>
+  <rect x="730" y="190" width="14" height="14" rx="3" fill="#6AAD4A"/>
+  <text x="750" y="201" font-family="Arial, sans-serif" font-size="10" fill="#222222" text-anchor="start">Philips</text>
+  <rect x="830" y="190" width="14" height="14" rx="3" fill="#D55E00"/>
+  <text x="850" y="201" font-family="Arial, sans-serif" font-size="10" fill="#222222" text-anchor="start">Siemens</text>
+  <text x="805.0" y="240" font-family="Arial, sans-serif" font-size="10" fill="#555555" text-anchor="middle">Two pre-specified cohorts: HC (healthy controls) and ALL (pathology-inclusive)</text>
+  <circle cx="60" cy="328" r="18" fill="#F5F5F5" stroke="#222222" stroke-width="2"/>
+  <text x="60" y="335" font-weight="bold" font-family="Arial, sans-serif" font-size="20" fill="#222222" text-anchor="middle">B</text>
+  <text x="92" y="330" font-weight="bold" font-family="Arial, sans-serif" font-size="15" fill="#222222" text-anchor="start">Eight qMRI Biomarkers (C2–C3)</text>
+  <rect x="47.0" y="358" width="210" height="110" rx="8" fill="white" stroke="#1B9E77" stroke-width="1.8"/>
+  <rect x="55.0" y="366" width="194" height="5" rx="3" fill="#1B9E77" opacity="0.7"/>
+  <text x="152.0" y="391" font-weight="bold" font-family="Arial, sans-serif" font-size="15" fill="#1B9E77" text-anchor="middle">T2w CSA</text>
+  <text x="152.0" y="410" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">SC cross-sectional area</text>
+  <rect x="57.0" y="434" width="190" height="20" rx="10" fill="#1B9E77" opacity="0.12"/>
+  <text x="152.0" y="448" font-family="Arial, sans-serif" font-size="10" fill="#1B9E77" text-anchor="middle">T2w · Morphometry</text>
+  <rect x="279.0" y="358" width="210" height="110" rx="8" fill="white" stroke="#D95F02" stroke-width="1.8"/>
+  <rect x="287.0" y="366" width="194" height="5" rx="3" fill="#D95F02" opacity="0.7"/>
+  <text x="384.0" y="391" font-weight="bold" font-family="Arial, sans-serif" font-size="15" fill="#D95F02" text-anchor="middle">T2* GM CSA</text>
+  <text x="384.0" y="410" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">Gray matter CSA</text>
+  <rect x="289.0" y="434" width="190" height="20" rx="10" fill="#D95F02" opacity="0.12"/>
+  <text x="384.0" y="448" font-family="Arial, sans-serif" font-size="10" fill="#D95F02" text-anchor="middle">T2*w · GM morphometry</text>
+  <rect x="511.0" y="358" width="210" height="110" rx="8" fill="white" stroke="#7570B3" stroke-width="1.8"/>
+  <rect x="519.0" y="366" width="194" height="5" rx="3" fill="#7570B3" opacity="0.7"/>
+  <text x="616.0" y="391" font-weight="bold" font-family="Arial, sans-serif" font-size="15" fill="#7570B3" text-anchor="middle">MTR</text>
+  <text x="616.0" y="410" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">Magnetization transfer ratio</text>
+  <rect x="521.0" y="434" width="190" height="20" rx="10" fill="#7570B3" opacity="0.12"/>
+  <text x="616.0" y="448" font-family="Arial, sans-serif" font-size="10" fill="#7570B3" text-anchor="middle">MT · Myelin</text>
+  <rect x="743.0" y="358" width="210" height="110" rx="8" fill="white" stroke="#E7298A" stroke-width="1.8"/>
+  <rect x="751.0" y="366" width="194" height="5" rx="3" fill="#E7298A" opacity="0.7"/>
+  <text x="848.0" y="391" font-weight="bold" font-family="Arial, sans-serif" font-size="15" fill="#E7298A" text-anchor="middle">MTsat</text>
+  <text x="848.0" y="410" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">MT saturation index</text>
+  <rect x="753.0" y="434" width="190" height="20" rx="10" fill="#E7298A" opacity="0.12"/>
+  <text x="848.0" y="448" font-family="Arial, sans-serif" font-size="10" fill="#E7298A" text-anchor="middle">MT · Macromolecules</text>
+  <rect x="47.0" y="486" width="210" height="110" rx="8" fill="white" stroke="#66A61E" stroke-width="1.8"/>
+  <rect x="55.0" y="494" width="194" height="5" rx="3" fill="#66A61E" opacity="0.7"/>
+  <text x="152.0" y="519" font-weight="bold" font-family="Arial, sans-serif" font-size="15" fill="#66A61E" text-anchor="middle">FA</text>
+  <text x="152.0" y="538" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">Fractional anisotropy</text>
+  <rect x="57.0" y="562" width="190" height="20" rx="10" fill="#66A61E" opacity="0.12"/>
+  <text x="152.0" y="576" font-family="Arial, sans-serif" font-size="10" fill="#66A61E" text-anchor="middle">DTI · White-matter coherence</text>
+  <rect x="279.0" y="486" width="210" height="110" rx="8" fill="white" stroke="#E6AB02" stroke-width="1.8"/>
+  <rect x="287.0" y="494" width="194" height="5" rx="3" fill="#E6AB02" opacity="0.7"/>
+  <text x="384.0" y="519" font-weight="bold" font-family="Arial, sans-serif" font-size="15" fill="#E6AB02" text-anchor="middle">MD</text>
+  <text x="384.0" y="538" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">Mean diffusivity</text>
+  <rect x="289.0" y="562" width="190" height="20" rx="10" fill="#E6AB02" opacity="0.12"/>
+  <text x="384.0" y="576" font-family="Arial, sans-serif" font-size="10" fill="#E6AB02" text-anchor="middle">DTI · Tissue microstructure</text>
+  <rect x="511.0" y="486" width="210" height="110" rx="8" fill="white" stroke="#A6761D" stroke-width="1.8"/>
+  <rect x="519.0" y="494" width="194" height="5" rx="3" fill="#A6761D" opacity="0.7"/>
+  <text x="616.0" y="519" font-weight="bold" font-family="Arial, sans-serif" font-size="15" fill="#A6761D" text-anchor="middle">AD</text>
+  <text x="616.0" y="538" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">Axial diffusivity</text>
+  <rect x="521.0" y="562" width="190" height="20" rx="10" fill="#A6761D" opacity="0.12"/>
+  <text x="616.0" y="576" font-family="Arial, sans-serif" font-size="10" fill="#A6761D" text-anchor="middle">DTI · Axonal integrity</text>
+  <rect x="743.0" y="486" width="210" height="110" rx="8" fill="white" stroke="#666666" stroke-width="1.8"/>
+  <rect x="751.0" y="494" width="194" height="5" rx="3" fill="#666666" opacity="0.7"/>
+  <text x="848.0" y="519" font-weight="bold" font-family="Arial, sans-serif" font-size="15" fill="#666666" text-anchor="middle">RD</text>
+  <text x="848.0" y="538" font-family="Arial, sans-serif" font-size="11" fill="#555555" text-anchor="middle">Radial diffusivity</text>
+  <rect x="753.0" y="562" width="190" height="20" rx="10" fill="#666666" opacity="0.12"/>
+  <text x="848.0" y="576" font-family="Arial, sans-serif" font-size="10" fill="#666666" text-anchor="middle">DTI · Myelin condition</text>
+</svg>

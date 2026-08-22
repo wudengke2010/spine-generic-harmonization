@@ -1,0 +1,15 @@
+site,n,mean,std,CV(%)
+fslAchieva,6,10.3,5.4,52.42
+amu,5,14.24,1.63,11.46
+brnoUhb,8,16.16,1.13,6.97
+brnoCeitec,6,16.75,1.07,6.38
+dresden,2,15.87,0.99,6.24
+barcelona,6,16.49,1.02,6.2
+beijingPrisma,5,15.71,0.92,5.85
+cmrra,6,16.16,0.93,5.76
+cardiff,6,17.32,0.89,5.16
+balgrist,6,15.6,0.76,4.87
+fslPrisma,5,17.35,0.82,4.71
+beijingVerio,4,16.03,0.66,4.09
+beijingGE,4,16.99,0.65,3.85
+cmrrb,7,16.63,0.51,3.07

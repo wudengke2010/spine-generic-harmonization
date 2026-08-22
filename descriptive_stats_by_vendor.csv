@@ -1,6 +1,0 @@
-,SC_CSA_t2star,SC_CSA_t2star,SC_CSA_t2star,SC_CSA_t2star,SC_CSA_t2star,GM_CSA_t2star,GM_CSA_t2star,GM_CSA_t2star,GM_CSA_t2star,GM_CSA_t2star,WM_CSA_t2star,WM_CSA_t2star,WM_CSA_t2star,WM_CSA_t2star,WM_CSA_t2star,GM_WM_ratio_t2star,GM_WM_ratio_t2star,GM_WM_ratio_t2star,GM_WM_ratio_t2star,GM_WM_ratio_t2star,GM_SC_frac_t2star,GM_SC_frac_t2star,GM_SC_frac_t2star,GM_SC_frac_t2star,GM_SC_frac_t2star
-,count,mean,std,min,max,count,mean,std,min,max,count,mean,std,min,max,count,mean,std,min,max,count,mean,std,min,max
-vendor,,,,,,,,,,,,,,,,,,,,,,,,,
-GE,4,73.79,2.14,70.6,75.12,4,16.99,0.65,16.1,17.65,4,57.32,1.63,54.91,58.43,4,0.3,0.01,0.29,0.3,4,0.23,0.0,0.23,0.23
-Philips,6,74.46,6.26,65.58,83.63,6,10.3,5.4,3.25,15.8,6,64.16,8.81,52.18,74.72,6,0.17,0.1,0.05,0.26,6,0.14,0.07,0.04,0.2
-Siemens,66,76.72,5.64,67.1,88.68,66,16.24,1.19,11.35,18.63,66,60.72,5.14,51.78,71.98,66,0.27,0.02,0.18,0.31,66,0.21,0.02,0.15,0.24
