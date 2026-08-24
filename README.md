@@ -43,6 +43,10 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 │   ├── sync_html_md.py             # LaTeX → HTML/MD synchronization
 │   ├── check_abstract.py           # Abstract word-count validator
 │   ├── fix_paper.py                # Automated paper fixes
+│   ├── ml_vendor_auc.py            # Machine-learnability of the vendor signature (RF, repeated stratified 5-fold CV)
+│   ├── bootstrap_ci_table2.py      # Stratified bootstrap 95% CIs for Table 2 effect sizes
+│   ├── covbat_pc_report.py         # CovBat PC retention analysis (K, cumulative variance)
+│   ├── cov_frobenius_fig.py        # FigS4: cross-metric correlation matrices + Frobenius distance heatmaps
 │   └── make_supplementary_pdf.py   # Supplementary PDF generator
 ├── data/                           # Raw and harmonized biomarker tables
 │   ├── supplementary_table_S1.csv  # Per-biomarker evaluation table (96 rows)
@@ -62,6 +66,16 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 │   ├── lovo_vs_internal_comparison.csv  # LOVO vs internal-validation results
 │   ├── results_design_C.csv        # Design C balanced-subsample bootstrap results
 │   ├── summary_design_C.csv        # Design C summary statistics
+│   ├── ml_auc_summary.csv          # ML vendor-signature AUC, ALL cohort (N=246)
+│   ├── ml_auc_summary_HC.csv       # ML vendor-signature AUC, HC validation cohort (N=188)
+│   ├── ml_vendor_detection.csv     # Per-run RF vendor-detection AUC traces
+│   ├── bootstrap_ci_table2.csv     # Bootstrap 95% CIs for Table 2 effect sizes
+│   ├── covbat_pc_retention.csv     # CovBat retained PC count (K) per cohort
+│   ├── covbat_pc_variance.csv      # Per-PC explained variance of CovBat residuals
+│   ├── corr_matrices_HC.csv        # 8x8 cross-metric correlations per method (HC)
+│   ├── corr_matrices_ALL.csv       # 8x8 cross-metric correlations per method (ALL)
+│   ├── frobenius_distance_HC.csv   # Pairwise Frobenius distances between methods (HC)
+│   ├── frobenius_distance_ALL.csv  # Pairwise Frobenius distances between methods (ALL)
 │   └── per_subject/                # Per-subject SCT output (raw measurements)
 │       ├── csa_t2star/             # 267 files: sub-*_csa_t2star.csv (subject-level T2* CSA)
 │       └── csa_t2w/                # 263 files: sub-*_csa.csv (slice-level T2w SCT output)
@@ -72,7 +86,8 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 │   ├── Fig4_tradeoff.{png,pdf}
 │   ├── Fig5_rpre_post_marginals.{png,pdf}
 │   ├── fig_lovo_validation.{png,pdf}
-│   └── FigS_design_C_robustness.{png,pdf}
+│   ├── FigS_design_C_robustness.{png,pdf}
+│   └── FigS4_covariance.{pdf,png,svg}  # Cross-metric covariance + Frobenius distance (Supplementary Fig. S4)
 ├── paper/                          # Manuscript source files
 │   ├── spine_generic_harmonization_paper.tex   # Final manuscript (LaTeX source)
 │   └── spine_generic_harmonization_paper.pdf
@@ -97,6 +112,11 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 | RELIEF | Removal of latent inter-scanner effects via ICA |
 | LME/FE | Linear mixed-effects / fixed-effects hybrid model |
 
+## Version History
+
+- **v1.2.0** — Added ML vendor-signature analysis (`ml_vendor_auc.py`), bootstrap 95% CIs for Table 2 (`bootstrap_ci_table2.py`), CovBat PC retention report (`covbat_pc_report.py`), and covariance/Frobenius supplementary figure (`cov_frobenius_fig.py`, FigS4). Manuscript updated to the submission version (machine-learnability endpoint, uncertainty quantification, CovBat PC retention).
+- **v1.1.0** — LOVO validation code, Design C data, final manuscript, per-subject SCT measurements.
+
 ## Citation
 
 If you use this code or data, please cite:
@@ -106,7 +126,7 @@ If you use this code or data, please cite:
   author = {Zhu, Yilin and Wu, Dengke},
   title  = {Spine-Generic QMRI Harmonization},
   year   = {2026},
-  doi    = {10.5281/zenodo.21264267},
+  doi    = {10.5281/zenodo.21264266},
   url    = {https://github.com/wudengke2010/spine-generic-harmonization}
 }
 ```
