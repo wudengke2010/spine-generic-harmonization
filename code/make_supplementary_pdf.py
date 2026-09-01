@@ -1,5 +1,5 @@
 """
-Generate Supplementary Materials PDF for Scientific Reports submission.
+Generate Supplementary Materials PDF (Supplementary Table S1).
 - Page 1: Title page with manuscript title and author list
 - Pages 2+: Supplementary Table S1 (96 rows, 11 columns)
 """
@@ -56,9 +56,8 @@ pdf.cell(page_w, 8, title, align='C', new_x="LMARGIN", new_y="NEXT")
 pdf.ln(10)
 
 pdf.set_font('Helvetica', '', 12)
-subtitle = ("Impact of Scanner Vendor Harmonization on Spinal Cord "
-            "Quantitative MRI Biomarkers: A Systematic Benchmark of "
-            "Five Statistical Correction Strategies")
+subtitle = ("Scanner Vendor Harmonisation of Spinal Cord Quantitative MRI "
+            "Biomarkers: A Five-Method Benchmark")
 pdf.multi_cell(page_w, 6, subtitle, align='C')
 pdf.ln(8)
 
