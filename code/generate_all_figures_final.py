@@ -128,7 +128,13 @@ def gen_fig2(master, comp, perm, umap):
     print("[Fig2] Baseline vendor effects")
     vendors = ["GE", "Philips", "Siemens"]
     v_colors = [VENDOR_COLOR[v] for v in vendors]
-    hc = master[master["pathology"] == "HC"]
+    # Complete-case HC analysis sample (N=188): all 8 biomarkers + age + sex + vendor
+    # present — identical filter to step3_refit_completecase.py / step4_eval_completecase.py,
+    # so violins / ANOVA p / eta2 annotations share the same subjects as Table 2.
+    CC_BIOMARKERS = ["T2w_CSA", "GM_CSA_mm2", "MTR", "MTsat",
+                     "FA", "MD", "AD", "RD"]
+    hc = master[master["pathology"] == "HC"].dropna(
+        subset=CC_BIOMARKERS + ["age", "sex", "vendor"])
     hc_orig = comp[(comp["cohort"] == "HC") & (comp["method"] == "Original")].set_index("biomarker")
 
     fig = plt.figure(figsize=(13, 9))

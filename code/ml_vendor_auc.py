@@ -37,19 +37,30 @@ SUFFIX = {
 }
 FILE = {
     "Original": f"{BASE}/biomarkers_master.csv",
-    "ComBat": f"{BASE}/step3_combat/biomarkers_combat_ALL.csv",
+    # v1.3.0: ComBat and LME/FE use the complete-case refits (step3_cc), so the
+    # ML analysis evaluates the same fitted models as the univariate panel.
+    "ComBat": f"{BASE}/step3_cc/biomarkers_combat_ALL.csv",
     "ComBat-joint": f"{BASE}/step3_combat/biomarkers_combat_joint_ALL.csv",
     "CovBat": f"{BASE}/step3_covbat/biomarkers_covbat_ALL.csv",
     "RELIEF": f"{BASE}/step3_relief/biomarkers_relief_ALL.csv",
-    "LME": f"{BASE}/step3_lme/biomarkers_lme_ALL.csv",
+    "LME": f"{BASE}/step3_cc/biomarkers_lme_ALL.csv",
+}
+FILE_HC = {
+    "Original": f"{BASE}/biomarkers_master.csv",
+    "ComBat": f"{BASE}/step3_cc/biomarkers_combat_HC.csv",
+    "ComBat-joint": f"{BASE}/step3_combat/biomarkers_combat_joint_HC.csv",
+    "CovBat": f"{BASE}/step3_covbat/biomarkers_covbat_HC.csv",
+    "RELIEF": f"{BASE}/step3_relief/biomarkers_relief_HC.csv",
+    "LME": f"{BASE}/step3_cc/biomarkers_lme_HC.csv",
 }
 N_REPEATS = 20
 N_FOLDS = 5
 SEED = 42
 
 
-def load_method(name):
-    df = pd.read_csv(FILE[name])
+def load_method(name, cohort="ALL"):
+    fdict = FILE if cohort == "ALL" else FILE_HC
+    df = pd.read_csv(fdict[name])
     if SUFFIX[name] is None:
         cols = BIOM
     else:
@@ -173,6 +184,41 @@ def main():
     sm.to_csv(f"{outdir}/ml_auc_summary.csv", index=False)
     print("\nSaved:", outdir)
     print(sm.pivot(index="method", columns="task", values="auc_mean").round(3))
+
+    # ---- HC cohort: vendor task only (complete-case N=188) ----
+    master_hc = pd.read_csv(FILE_HC["Original"])
+    hc_mask = (master_hc["Pathology"].astype(str).str.upper() == "HC") & master_hc[BIOM].notna().all(axis=1)
+    hc_ids = set(master_hc.loc[hc_mask, "participant_id"])
+    hc_rows, hc_summary = [], {}
+    for name in SUFFIX:
+        df = load_method(name, cohort="HC")
+        df = df[df["participant_id"].isin(hc_ids)].reset_index(drop=True)
+        assert len(df) == len(hc_ids), f"{name} HC: subject mismatch"
+        X = df[BIOM].to_numpy()
+        y_vendor = df["Manufacturer"].to_numpy()
+        classes = np.sort(np.unique(y_vendor))
+        aucs = []
+        for r in range(N_REPEATS):
+            parts = list(RepeatedStratifiedKFold(
+                n_splits=N_FOLDS, n_repeats=1, random_state=SEED + r).split(X, y_vendor))
+            rf = RandomForestClassifier(n_estimators=500, min_samples_leaf=5,
+                                        class_weight="balanced", random_state=SEED + r)
+            p = np.zeros((len(y_vendor), len(classes)))
+            for tr, te in parts:
+                rf.fit(X[tr], y_vendor[tr])
+                p[te] = rf.predict_proba(X[te])
+            aucs.append(roc_auc_score(y_vendor, p, multi_class="ovr",
+                                      average="macro", labels=classes))
+        hc_summary[name] = (float(np.mean(aucs)), float(np.std(aucs)))
+        print(f"HC {name:12s} vendor={hc_summary[name][0]:.3f}+-{hc_summary[name][1]:.3f}")
+        for r, v in enumerate(aucs):
+            hc_rows.append({"method": name, "task": "vendor_HC", "repeat": r, "auc": v})
+    pd.DataFrame(hc_rows).to_csv(f"{outdir}/ml_vendor_detection_HC.csv", index=False)
+    hc_sm = pd.DataFrame([
+        {"method": k, "task": "vendor_HC", "auc_mean": round(v[0], 4), "auc_sd": round(v[1], 4)}
+        for k, v in hc_summary.items()])
+    hc_sm.to_csv(f"{outdir}/ml_auc_summary_HC.csv", index=False)
+    print("Saved HC summary:", f"{outdir}/ml_auc_summary_HC.csv")
 
 
 if __name__ == "__main__":

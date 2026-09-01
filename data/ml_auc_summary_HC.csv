@@ -1,7 +1,7 @@
 method,task,auc_mean,auc_sd
 Original,vendor_HC,0.9833,0.0021
-ComBat,vendor_HC,0.6914,0.026
+ComBat,vendor_HC,0.6526,0.0292
 ComBat-joint,vendor_HC,0.672,0.027
 CovBat,vendor_HC,0.5566,0.0252
 RELIEF,vendor_HC,0.6538,0.0216
-LME,vendor_HC,0.8238,0.017
+LME,vendor_HC,0.8209,0.0204

@@ -20,7 +20,9 @@
 \usepackage{multirow}
 \usepackage{siunitx}
 \usepackage{tabularx}
+\usepackage{xurl}
 \usepackage{pdflscape}
+\setlength{\emergencystretch}{3em}
 
 \hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
 \onehalfspacing
@@ -35,7 +37,7 @@
 
 \noindent\textbf{Methods:} Eight qMRI biomarkers (T2w-CSA, GM-CSA, MTR, MTsat, FA, MD, AD, RD) were extracted at C2--C3 from the spine-generic dataset (267 subjects, 44 sites, 3 vendors; site and vendor perfectly nested). Five methods---ComBat, ComBat-joint, CovBat, RELIEF, LME/FE---were evaluated on four endpoints in healthy-control ($N=188$) and pathology-inclusive ($N=246$) cohorts: vendor-effect removal, biological-signal recovery, subject-level preservation, and machine-learnability of the vendor signature. Leave-one-vendor-out validation tested generalisability.
 
-\noindent\textbf{Results:} Baseline vendor effects were substantial ($\eta^2=0.28$; PERMANOVA $R^2=0.31$, $p=1\times10^{-4}$, the permutation lower bound with 9,999 permutations). All methods reduced vendor $\eta^2$ to ${\sim}10^{-4}$ (per-metric reductions of 97.6--99.9\%, well below the $\eta^2\approx0.011$ expected by chance), rendering multivariate vendor structure non-significant (all $p\geq0.97$). Machine-learnability confirmed removal of the residual multivariate vendor signature: random-forest vendor detection fell from AUC~0.99 (unharmonised) to 0.54--0.80 across methods (permutation reference 0.50), while pathology classification improved (AUC 0.52 to 0.62). Age signal increased 1.7--3.7-fold across cohorts. Methods diverged on subject preservation (LME/FE: $r=0.84$; CovBat: $r=0.78$), forming a Pareto frontier. LOVO validation showed ComBat/ComBat-joint generalised without significant degradation ($\eta^2<10^{-3}$, PERMANOVA $p>0.86$), while RELIEF and LME/FE failed ($\eta^2\sim0.19$, $p<0.03$). Three methodological constraints---vendor-site nesting, LME fixed-effects fallback (75\% of cases), and RELIEF ICA inactivation---converge on a single structural limitation: only 3 vendors in a perfectly nested 44-site design.
+\noindent\textbf{Results:} Baseline vendor effects were substantial ($\eta^2=0.31$; PERMANOVA $R^2=0.315$, $p=1\times10^{-4}$, the permutation lower bound with 9,999 permutations). All methods reduced vendor $\eta^2$ to ${\sim}10^{-4}$ (per-metric reductions of 92.1--100.0\%, well below the $\eta^2\approx0.011$ expected by chance), rendering multivariate vendor structure non-significant (all $p=1.0$). Machine-learnability confirmed removal of the residual multivariate vendor signature: random-forest vendor detection fell from AUC~0.99 (unharmonised) to 0.54--0.79 across methods (permutation reference 0.50), while pathology classification improved (AUC 0.52 to 0.62). Age signal increased 4.8--6.2-fold across cohorts. Methods diverged on subject preservation (LME/FE: $r=0.82$; CovBat: $r=0.78$), forming a Pareto frontier; within-resample paired bootstrap confirmed the preservation hierarchy (8/10 and 9/10 method pairs significantly separated in HC and ALL, respectively). LOVO validation showed ComBat/ComBat-joint generalised without significant degradation ($\eta^2<10^{-3}$, PERMANOVA $p\geq0.98$), while RELIEF and LME/FE failed ($\eta^2\approx0.2$, $p<0.01$). Three methodological constraints---vendor-site nesting, LME fixed-effects fallback (56\% of cases), and RELIEF ICA inactivation---converge on a single structural limitation: only 3 vendors in a perfectly nested 44-site design.
 
 \noindent\textbf{Conclusion:} Harmonisation is recommended for pooled multi-vendor spinal cord qMRI. ComBat provides robust generalisability and is preferred for broad deployment; CovBat/RELIEF are suitable for pooled-group analyses within fixed vendor sets.
 
@@ -69,24 +71,26 @@ Here we benchmark five methods on eight spinal cord qMRI biomarkers using four o
 
 \subsection{Dataset and Cohorts}
 
-The spine-generic multi-subject dataset (release r20231212) [1] comprises 267 subjects scanned at 44 sites across three vendors (GE Healthcare: 37 subjects at 6 sites; Philips: 50 subjects at 8 sites; Siemens Healthineers: 180 subjects at 30 sites) using a standardised consensus protocol [4]. Site and vendor are perfectly nested (each site operates a single scanner from one vendor); reported vendor effects thus represent the composite ``vendor-in-site'' effect. Demographics were balanced across vendors (Table~1; all $p\geq0.125$).
+The spine-generic multi-subject dataset (release r20231212) [1] comprises 267 subjects scanned at 44 sites across three vendors (GE Healthcare: 37 subjects at 6 sites; Philips: 50 subjects at 8 sites; Siemens Healthineers: 180 subjects at 30 sites) using a standardised consensus protocol [4]. Site and vendor are perfectly nested (each site operates a single scanner from one vendor); reported vendor effects thus represent the composite ``vendor-in-site'' effect. Demographics were balanced across vendors in the complete-case analysis sample (Table~1; all $p\geq0.203$).
 
 \begin{table}[H]
 \centering
-\caption{Demographic and acquisition characteristics by vendor (HC cohort, $N=203$; complete-case $N=188$). Continuous variables: mean $\pm$ SD, one-way ANOVA. Categorical variables: count (\%), $\chi^{2}$ test. Site and vendor are perfectly nested (44 sites across 3 vendors).}
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{Demographic and acquisition characteristics by vendor (HC complete-case analysis sample, $N=188$). Continuous variables: mean $\pm$ SD, one-way ANOVA. Categorical variables: count (\%), $\chi^{2}$ test. Site and vendor are perfectly nested (44 sites across 3 vendors).}
 \label{tab:demographics}
 \begin{tabular}{lrrrrr}
 \toprule
 Characteristic & GE & Philips & Siemens & Total & $p$-value \\
 \midrule
-$N$ & 28 & 36 & 139 & 203 & --- \\
+$N$ & 25 & 33 & 130 & 188 & --- \\
 Sites ($n$) & 6 & 8 & 30 & 44 & --- \\
-Age, years (mean $\pm$ SD) & 26.9 $\pm$ 4.7 & 28.2 $\pm$ 4.5 & 29.1 $\pm$ 5.9 & 28.7 $\pm$ 5.6 & 0.125 \\
+Age, years (mean $\pm$ SD) & 27.0 $\pm$ 4.9 & 27.9 $\pm$ 4.1 & 29.0 $\pm$ 6.0 & 28.5 $\pm$ 5.6 & 0.203 \\
 Age range & 19--39 & 23--38 & 20--52 & 19--52 & --- \\
-Sex = F & 15 (53.6\%) & 19 (52.8\%) & 64 (46.0\%) & 98 (48.3\%) & 0.643 \\
-Sex = M & 13 (46.4\%) & 17 (47.2\%) & 75 (54.0\%) & 105 (51.7\%) & --- \\
-Height, cm & 169.6 $\pm$ 8.5 & 172.2 $\pm$ 10.2 & 173.2 $\pm$ 10.0 & 172.5 $\pm$ 9.9 & 0.232 \\
-Weight, kg & 65.2 $\pm$ 13.7 & 67.6 $\pm$ 14.3 & 68.2 $\pm$ 13.1 & 67.7 $\pm$ 13.4 & 0.576 \\
+Sex = F & 13 (52.0\%) & 18 (54.5\%) & 60 (46.2\%) & 91 (48.4\%) & 0.640 \\
+Sex = M & 12 (48.0\%) & 15 (45.5\%) & 70 (53.8\%) & 97 (51.6\%) & --- \\
+Height, cm & 170.1 $\pm$ 8.7 & 171.3 $\pm$ 9.9 & 173.2 $\pm$ 10.1 & 172.5 $\pm$ 9.9 & 0.277 \\
+Weight, kg & 66.4 $\pm$ 13.6 & 66.5 $\pm$ 13.6 & 67.9 $\pm$ 13.1 & 67.5 $\pm$ 13.2 & 0.781 \\
 Scanner models ($n$) & 3 & 4 & 6 & 13 & --- \\
 \bottomrule
 \end{tabular}
@@ -110,13 +114,13 @@ Five methods were evaluated (full mathematical details in Supplementary Material
 
 \textbf{RELIEF} [12]: ComBat-joint followed by independent component analysis (ICA) of residuals. Our implementation is a residual-ICA variant of RELIEF (REmoval of Latent Inter-scanner Effects through Factorization), rather than the linked matrix factorisation of the original report; this distinction is revisited in the Limitations. Components with significant vendor association (Benjamini-Hochberg FDR-controlled ANOVA, $q<0.05$) are zeroed. In the present dataset, no component reached significance (all $q\geq0.99$), rendering the pipeline functionally equivalent to ComBat-joint with an additional PCA/ICA round-trip.
 
-\textbf{LME/FE}: Site as a random intercept with age and sex fixed effects. When the random-effects covariance matrix was singular (expected with only 3 vendor levels---well below the recommended $k\geq5$ for stable REML estimation), the model fell back to ordinary least squares centring (75\% of 16 biomarker$\times$cohort combinations; see Results). Only MD and AD achieved stable LME fits in both cohorts. We label this hybrid approach ``LME/FE'' to acknowledge the dual mechanism.
+\textbf{LME/FE}: Site as a random intercept with age and sex fixed effects. When the random-effects covariance matrix was singular (expected with only 3 vendor levels---well below the recommended $k\geq5$ for stable REML estimation), the model fell back to ordinary least squares centring (9 of 16 biomarker$\times$cohort combinations, 56\%; see Results). Only MD and AD achieved stable LME fits in both cohorts. We label this hybrid approach ``LME/FE'' to acknowledge the dual mechanism.
 
 \subsection{Evaluation Endpoints}
 
 Four orthogonal endpoints were evaluated per method per cohort (detailed in Supplementary Material~S4):
 
-\textbf{Vendor-effect removal}: Univariate $\eta^2$ (ANOVA), intraclass correlation coefficient (ICC), and multivariate PERMANOVA $R^2$ (Euclidean distance, 9,999 permutations) [20]. PERMANOVA was computed on complete-case subjects with per-dimension z-scoring of biomarkers. For methods that operate on the same complete-case sample (ComBat-joint, CovBat, RELIEF), the multivariate $R^2$ consequently equals the mean of the per-metric $\eta^2$ (a mathematical identity of z-scored Euclidean PERMANOVA); for Original, ComBat, and LME/FE, univariate $\eta^2$ is averaged over each metric's maximum available sample ($N=190$--$203$), so their univariate and multivariate values differ slightly.
+\textbf{Vendor-effect removal}: Univariate $\eta^2$ (ANOVA), intraclass correlation coefficient (ICC), and multivariate PERMANOVA $R^2$ (Euclidean distance, 9,999 permutations) [20]. All six methods---including ComBat and LME/FE, which were refitted on the unified complete-case sample---were fitted and evaluated on the same subjects, with per-dimension z-scoring of biomarkers before PERMANOVA. Consequently, the multivariate $R^2$ equals the mean of the per-metric $\eta^2$ for every method (a mathematical identity of z-scored Euclidean PERMANOVA), so univariate and multivariate summaries are directly comparable throughout.
 
 \textbf{Biological-signal recovery}: Type-II semi-partial $R^2$ for age and sex from linear models.
 
@@ -126,7 +130,7 @@ Four orthogonal endpoints were evaluated per method per cohort (detailed in Supp
 
 \subsection{Leave-One-Vendor-Out External Validation}
 
-For each method, harmonisation models were trained on subjects from two vendors and applied to the held-out third vendor in three rotation folds. Test-vendor transformation used z-score distribution matching (ComBat, ComBat-joint) or projection onto training PCA/ICA space (CovBat, RELIEF). LME/FE assigned offset=0 to unseen vendors. The same three endpoints (excluding the ALL-cohort pathology/sex preservation indices) were evaluated after pooling the harmonised training-vendor and held-out test-vendor data within each fold (Supplementary Material~S5). Because z-score matching and PCA/ICA projection apply affine (location--scale) transformations to the test vendor, the test-vendor pre/post correlation equals 1.0 by construction for these methods; LOVO preservation statistics therefore reflect the pooled sample. Similarly, LOVO/internal $\eta^2$ ratios below 1 (ComBat, ComBat-joint) reflect the pooled evaluation sample rather than genuine improvement on unseen vendors.
+For each method, harmonisation models were trained on subjects from two vendors and applied to the held-out third vendor in three rotation folds. Test-vendor transformation used z-score distribution matching (ComBat, ComBat-joint) or projection onto training PCA/ICA space (CovBat, RELIEF). LME/FE assigned offset=0 to unseen vendors. The same three endpoints (excluding the ALL-cohort pathology/sex preservation indices) were evaluated after pooling the harmonised training-vendor and held-out test-vendor data within each fold (Supplementary Material~S5). For ComBat, ComBat-joint, and LME/FE, the test-vendor transformation applies a per-biomarker affine (location--scale) map, so the test-vendor pre/post correlation equals 1.0 by construction; for CovBat and RELIEF, projection onto the training PCA/ICA basis mixes biomarker dimensions, and the test-vendor pre/post correlation fell below 1 ($r=0.85$--$0.97$), indicating genuine distortion of held-out-vendor subject rankings. LOVO preservation statistics for the first group therefore reflect the pooled sample rather than the unseen vendor in isolation. Similarly, LOVO/internal $\eta^2$ ratios below 1 (ComBat, ComBat-joint) reflect the pooled evaluation sample rather than genuine improvement on unseen vendors.
 
 \subsection{Supplementary Analyses}
 
@@ -134,7 +138,7 @@ Design C balanced-subsample analysis drew 10 subjects per vendor (HC cohort, 1,0
 
 \subsection{Uncertainty Quantification}
 
-Ninety-five per cent confidence intervals for key point estimates were obtained using a stratified nonparametric bootstrap ($B=1{,}000$), resampling subjects with replacement within each scanner-vendor stratum to preserve group proportions. Percentile intervals are reported for $r_{\text{pre,post}}$ and for the baseline vendor effect size. Bootstrap intervals are not reported for post-harmonisation $\eta^2$ or PERMANOVA $R^2$ because harmonisation methods optimise on the same data, rendering subject-level resampling intervals unreliable for these near-degenerate statistics.
+Ninety-five per cent confidence intervals for key point estimates were obtained using a stratified nonparametric bootstrap ($B=2{,}000$), resampling subjects with replacement within each scanner-vendor stratum to preserve group proportions. Percentile intervals are reported for $r_{\text{pre,post}}$ and for the baseline vendor effect size. Because marginal CIs for $r_{\text{pre,post}}$ overlap across methods, method pairs were additionally compared with a within-resample paired bootstrap: for each bootstrap sample, all methods' $r$ values were recomputed and their differences tested against zero, which removes between-resample variance and directly targets the pairwise contrast. Bootstrap intervals are not reported for post-harmonisation $\eta^2$ or PERMANOVA $R^2$ because harmonisation methods optimise on the same data, rendering subject-level resampling intervals unreliable for these near-degenerate statistics.
 
 \subsection{Reporting Guidelines and Missing Data}
 
@@ -145,7 +149,7 @@ This study follows STROBE reporting guidance for cross-sectional studies where a
 
 \subsection{Baseline Vendor Effects}
 
-At baseline, vendor explained 28\% of univariate biomarker variance (mean $\eta^2=0.28$, 95\% CI [0.24, 0.35], stratified bootstrap; range 0.05--0.62 across metrics) and 31\% of multivariate structure (PERMANOVA $R^2=0.31$, $p=1\times10^{-4}$, the permutation lower bound with 9,999 permutations; HC cohort). These effects exceeded age-related variance by approximately two orders of magnitude and sex-related variance by one order. AD showed the largest vendor effect ($\eta^2_{\text{HC}}=0.62$), followed by MD ($0.38$) and MTsat ($0.34$); among structural metrics, GM-CSA showed the strongest vendor discrepancy ($\eta^2=0.18$, Philips scanners systematically lower; Supplementary Fig.~S3). In the ALL cohort, baseline vendor effects were comparable ($\eta^2=0.30$; PERMANOVA $R^2=0.34$).
+At baseline, vendor explained 31\% of univariate biomarker variance (mean $\eta^2=0.315$, 95\% CI [0.273, 0.381], stratified bootstrap; range 0.05--0.70 across metrics) and 31\% of multivariate structure (PERMANOVA $R^2=0.315$, $p=1\times10^{-4}$, the permutation lower bound with 9,999 permutations; HC cohort). These effects exceeded age-related variance by approximately two orders of magnitude and sex-related variance by one order. AD showed the largest vendor effect ($\eta^2_{\text{HC}}=0.70$), followed by MD ($0.46$) and MTsat ($0.34$); among structural metrics, GM-CSA showed the strongest vendor discrepancy ($\eta^2=0.18$, Philips scanners systematically lower; Supplementary Fig.~S3). In the ALL cohort, baseline vendor effects were comparable or larger ($\eta^2=0.336$; PERMANOVA $R^2=0.336$).
 
 \begin{figure}[H]
 \centering
@@ -156,7 +160,7 @@ At baseline, vendor explained 28\% of univariate biomarker variance (mean $\eta^
 
 \subsection{Vendor-Effect Removal}
 
-All five methods reduced vendor $\eta^2$ by approximately three orders of magnitude, to ${\sim}10^{-4}$ (median post-harmonisation $\eta^2$: ComBat $=3.9\times10^{-4}$, ComBat-joint $=4.5\times10^{-4}$, CovBat $=2.2\times10^{-4}$, RELIEF $=3.4\times10^{-4}$, LME/FE $=3.6\times10^{-4}$; Figure~2a,b, Table~2). For reference, the $\eta^2$ expected under the null hypothesis of no vendor effect is $(k-1)/(N-1)=2/187\approx0.011$; post-harmonisation values (${<}5\times10^{-4}$) lie far below this chance level, so the effective reduction relative to chance expectation is approximately 96\%. Multivariate vendor structure became indistinguishable from chance (all PERMANOVA $p\geq0.97$ in HC cohort; $p\geq0.97$ in ALL cohort). Covariance structure was preserved similarly across methods (Supplementary Fig.~S4): CovBat and RELIEF showed near-identical cross-metric correlations (Frobenius distance 0.09), while LME/FE was closest to the original (1.56), reflecting minimal covariance distortion.
+All five methods reduced vendor $\eta^2$ by approximately three orders of magnitude, to ${\sim}10^{-4}$ (median post-harmonisation $\eta^2$: ComBat $=5.2\times10^{-4}$, ComBat-joint $=4.5\times10^{-4}$, CovBat $=2.2\times10^{-4}$, RELIEF $=3.3\times10^{-4}$, LME/FE $=4.1\times10^{-4}$; mean $\eta^2\leq8\times10^{-4}$; Figure~2a,b, Table~2). For reference, the $\eta^2$ expected under the null hypothesis of no vendor effect is $(k-1)/(N-1)=2/187\approx0.011$; post-harmonisation values lie far below this chance level, so the effective reduction relative to chance expectation is 93--98\% across methods. Multivariate vendor structure became indistinguishable from chance (all PERMANOVA $p=1.0$ in both cohorts). Covariance structure was preserved similarly across methods (Supplementary Fig.~S4): CovBat and RELIEF showed near-identical cross-metric correlations (Frobenius distance 0.09), while ComBat and LME/FE were closest to the original (1.55 and 1.56), reflecting minimal covariance distortion.
 
 \begin{figure}[H]
 \centering
@@ -167,33 +171,35 @@ All five methods reduced vendor $\eta^2$ by approximately three orders of magnit
 
 \begin{table}[H]
 \centering
-\caption{Harmonisation performance summary (HC cohort). Values are means across 8 biomarkers. $\eta^2_{\text{vendor}}$: post-harmonisation vendor ANOVA effect size; $R^2_{\text{PERMANOVA}}$: multivariate vendor structure; $r_{\text{pre,post}}$: subject-ranking preservation; Age $R^2$: semi-partial age variance explained. LOVO columns show leave-one-vendor-out external validation (mean across 3 held-out-vendor folds). Univariate $\eta^2$ is averaged over each metric's maximum available sample ($N=190$--$203$ for Original, ComBat, and LME/FE; complete-case $N=188$ for ComBat-joint, CovBat, and RELIEF, which require the full joint biomarker panel); PERMANOVA $R^2$ is computed on complete cases ($N=188$). Values in parentheses are 95\% percentile bootstrap CIs ($B=1{,}000$, stratified by vendor).}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\caption{Harmonisation performance summary (HC cohort, complete-case $N=188$). All methods were fitted and evaluated on the same unified complete-case sample. Values are means across 8 biomarkers. $\eta^2_{\text{vendor}}$: post-harmonisation vendor ANOVA effect size; $R^2_{\text{PERMANOVA}}$: multivariate vendor structure (equals the mean per-metric $\eta^2$ by the z-score Euclidean identity); $r_{\text{pre,post}}$: subject-ranking preservation; Age $R^2$: semi-partial age variance explained. LOVO columns show leave-one-vendor-out external validation (mean across 3 held-out-vendor folds). Values in parentheses are 95\% percentile bootstrap CIs ($B=2{,}000$, stratified by vendor).}
 \label{tab:results}
 \begin{tabular}{lSSlSSS}
 \toprule
 Method & {$\eta^2_{\text{vendor}}$} & {$R^2_{\text{PERMANOVA}}$} & {$r_{\text{pre,post}}$ (95\% CI)} & {Age $R^2$} & {LOVO $\eta^2$} & {LOVO ratio} \\
 \midrule
-Original (baseline) & 2.79e-01 & 0.315 & 1.000 & 0.003 & {---} & {---} \\
-ComBat & 3.75e-04 & 0.002 & 0.817 (0.760--0.852) & 0.006 & 1.72e-04 & 0.5$\times$ \\
-ComBat-joint & 4.91e-04 & 0.0005 & 0.806 (0.757--0.838) & 0.009 & 4.42e-04 & 0.9$\times$ \\
-CovBat & 2.54e-04 & 0.0003 & 0.782 (0.731--0.815) & 0.010 & 1.01e-03 & 4.0$\times$ \\
-RELIEF & 4.36e-04 & 0.0004 & 0.791 (0.740--0.823) & 0.009 & 1.87e-01 & 428$\times$ \\
-LME/FE & 3.07e-04 & 0.002 & 0.840 (0.787--0.872) & 0.007 & 1.74e-01 & 565$\times$ \\
+Original (baseline) & 3.15e-01 & 0.315 & 1.000 & 0.002 & {---} & {---} \\
+ComBat & 4.09e-04 & 0.0004 & 0.789 (0.741--0.825) & 0.009 & 1.84e-04 & 0.5$\times$ \\
+ComBat-joint & 4.91e-04 & 0.0005 & 0.806 (0.760--0.839) & 0.009 & 4.42e-04 & 0.9$\times$ \\
+CovBat & 2.54e-04 & 0.0003 & 0.782 (0.735--0.816) & 0.010 & 1.01e-03 & 4.0$\times$ \\
+RELIEF & 4.36e-04 & 0.0004 & 0.791 (0.743--0.824) & 0.009 & 1.87e-01 & 428$\times$ \\
+LME/FE & 7.93e-04 & 0.0008 & 0.816 (0.771--0.848) & 0.009 & 1.99e-01 & 251$\times$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \subsection{Machine-Learnability of the Vendor Signature}
 
-Unharmonised biomarker profiles allowed near-perfect machine detection of scanner manufacturer (macro one-vs-rest AUC $=0.986\pm0.002$ in the ALL cohort; $0.983\pm0.002$ in HC), confirming that the vendor signature dominates the multivariate feature space. After harmonisation, detectability dropped toward the chance level (permutation reference $0.495\pm0.038$): CovBat $0.540\pm0.024$, RELIEF $0.610\pm0.022$, ComBat-joint $0.627\pm0.021$, ComBat $0.660\pm0.021$, and LME/FE $0.800\pm0.015$ (ALL cohort, $N=246$; HC values were concordant: 0.557, 0.654, 0.672, 0.691, and 0.824, respectively). Complementarily, pathology classification improved from AUC $0.520\pm0.024$ (unharmonised) to $0.594$--$0.621$ across methods (ComBat-joint highest), and sex classification remained stable ($0.646$--$0.672$), indicating that harmonisation removed vendor confounding while unmasking---rather than distorting---biological signal.
+Unharmonised biomarker profiles allowed near-perfect machine detection of scanner manufacturer (macro one-vs-rest AUC $=0.986\pm0.002$ in the ALL cohort; $0.983\pm0.002$ in HC), confirming that the vendor signature dominates the multivariate feature space. After harmonisation, detectability dropped toward the chance level (permutation reference $0.495\pm0.038$): CovBat $0.540\pm0.024$, RELIEF $0.610\pm0.022$, ComBat-joint $0.627\pm0.021$, ComBat $0.636\pm0.022$, and LME/FE $0.791\pm0.017$ (ALL cohort, $N=246$; HC values were concordant: 0.557, 0.654, 0.672, 0.653, and 0.821, respectively). Complementarily, pathology classification improved from AUC $0.520\pm0.024$ (unharmonised) to $0.594$--$0.621$ across methods (ComBat and ComBat-joint highest), and sex classification remained stable ($0.646$--$0.672$), indicating that harmonisation removed vendor confounding while unmasking---rather than distorting---biological signal.
 
 \subsection{Biological-Signal Recovery}
 
-Age $R^2$ increased 2.3--3.7-fold after harmonisation in HC (mean across biomarkers: from $2.6\times10^{-3}$ to $5.9\times10^{-3}$--$9.6\times10^{-3}$) and 1.7--2.4-fold in ALL (from $6.7\times10^{-3}$ to $1.1\times10^{-2}$--$1.6\times10^{-2}$). Sex $R^2$ showed a similar pattern (1.1--1.6-fold increase). Absolute age effects were larger in ALL, consistent with greater biological heterogeneity, but remained below 2\% of variance.
+Age $R^2$ increased 5.6--6.2-fold after harmonisation in HC (mean across biomarkers: from $1.5\times10^{-3}$ to $8.7\times10^{-3}$--$9.5\times10^{-3}$) and 4.8--5.0-fold in ALL (from $3.2\times10^{-3}$ to $1.5\times10^{-2}$--$1.6\times10^{-2}$). Sex $R^2$ showed a similar pattern (1.1--1.3-fold increase). Absolute age effects were larger in ALL, consistent with greater biological heterogeneity, but remained below 2\% of variance.
 
 \subsection{Subject-Level Preservation and the Pareto Frontier}
 
-Methods diverged on subject-ranking preservation (HC cohort, mean $r$ across methods: LME/FE $=0.840$, ComBat $=0.817$, ComBat-joint $=0.806$, RELIEF $=0.791$, CovBat $=0.782$). This ranking was stable between HC and ALL cohorts (ALL: 0.829, 0.807, 0.787, 0.772, and 0.763, respectively). Bootstrap 95\% CIs for $r_{\text{pre,post}}$ overlapped across methods (Table~2), indicating that the preservation gradient reflects consistent trends rather than individually significant pairwise separations. A clear Pareto frontier emerged: as multivariate decontamination (PERMANOVA $R^2$) increases, subject-level preservation decreases monotonically (Figure~3). LME/FE's top rank partly reflects its minimal correction: the FE fallback applies a pure location shift without scale adjustment, leaving subject-level variance essentially untouched. Under balanced conditions (Design C, 10 subjects per vendor), the preservation hierarchy reversed: ComBat-family methods converged to near-perfect preservation ($r=0.99$--$1.00$; CovBat $0.991$, others $\geq0.998$) while LME/FE remained at $r=0.841$. The main-analysis preservation gradient therefore partly reflects real-world vendor imbalance (Siemens 67\%) rather than intrinsic method properties, and the Pareto frontier should be interpreted as descriptive of this dataset's imbalance structure rather than a stable method ranking.
+Methods diverged on subject-ranking preservation (HC cohort, mean $r$ across methods: LME/FE $=0.816$, ComBat-joint $=0.806$, RELIEF $=0.791$, ComBat $=0.789$, CovBat $=0.782$). This ranking was stable between HC and ALL cohorts (ALL: 0.801, 0.787, 0.772, 0.774, and 0.763, respectively). Although the marginal bootstrap 95\% CIs for $r_{\text{pre,post}}$ overlap across methods (Table~2), a within-resample paired bootstrap ($B=2{,}000$) confirmed that the preservation hierarchy is statistically reliable: 8 of 10 method pairs were significantly separated in HC (all $p\leq0.003$) and 9 of 10 in ALL, with LME/FE significantly highest and CovBat significantly lowest (the only non-separated pairs were ComBat vs.\ CovBat and ComBat vs.\ RELIEF in HC, and ComBat vs.\ RELIEF in ALL; Supplementary Table~S7). A clear Pareto frontier emerged: as multivariate decontamination (PERMANOVA $R^2$) increases, subject-level preservation decreases monotonically (Figure~3). LME/FE's top rank partly reflects its minimal correction: the FE fallback applies a pure location shift without scale adjustment, leaving subject-level variance essentially untouched. Under balanced conditions (Design C, 10 subjects per vendor), the preservation hierarchy reversed: ComBat-family methods converged to near-perfect preservation ($r=0.99$--$1.00$; CovBat $0.991$, others $\geq0.998$) while LME/FE remained at $r=0.841$. The main-analysis preservation gradient therefore partly reflects real-world vendor imbalance (Siemens 69\%) rather than intrinsic method properties, and the Pareto frontier should be interpreted as descriptive of this dataset's imbalance structure rather than a stable method ranking.
 
 \begin{figure}[H]
 \centering
@@ -204,7 +210,7 @@ Methods diverged on subject-ranking preservation (HC cohort, mean $r$ across met
 
 \subsection{LOVO External Validation}
 
-ComBat and ComBat-joint generalised to unseen manufacturers with negligible degradation (LOVO $\eta^2$: $1.7\times10^{-4}$ and $4.4\times10^{-4}$; PERMANOVA $p=0.864$ and $0.951$; LOVO/internal $\eta^2$ ratio: 0.5 and 0.9). CovBat showed moderate degradation ($\eta^2=1.0\times10^{-3}$, ratio 4.0). RELIEF and LME/FE failed external validation ($\eta^2_{\text{LOVO}}$: 0.19 and 0.17; PERMANOVA $p<0.03$; ratios 428 and 565; Figure~4a--d). This pattern is explained by structural constraints: RELIEF's ICA unmixing matrix is non-transferable across vendor sets, and LME/FE cannot estimate offsets for unseen vendors.
+ComBat and ComBat-joint generalised to unseen manufacturers with negligible degradation (LOVO $\eta^2$: $1.8\times10^{-4}$ and $4.4\times10^{-4}$; PERMANOVA $p\geq0.98$ in all three folds; LOVO/internal $\eta^2$ ratio: 0.5 and 0.9). CovBat showed moderate degradation ($\eta^2=1.0\times10^{-3}$, ratio 4.0). RELIEF and LME/FE failed external validation ($\eta^2_{\text{LOVO}}$: 0.19 and 0.20; PERMANOVA $p<0.01$; ratios 428 and 251; Figure~4a--d). This pattern is explained by structural constraints: RELIEF's ICA unmixing matrix is non-transferable across vendor sets, and LME/FE cannot estimate offsets for unseen vendors. Notably, CovBat and RELIEF---the two methods that project the held-out vendor onto the training PCA/ICA basis---showed test-vendor pre/post correlations below 1 ($r=0.85$--$0.97$), whereas the affine z-score methods preserved held-out-vendor subject rankings exactly by construction.
 
 \begin{figure}[H]
 \centering
@@ -215,35 +221,35 @@ ComBat and ComBat-joint generalised to unseen manufacturers with negligible degr
 
 \subsection{Structural Constraints}
 
-Three methodological observations converge on a single structural limitation of the dataset: only 3 vendors with 44 perfectly nested sites. The LME random-effects covariance matrix was singular in 75\% of cases because 3 vendor levels provide insufficient information for stable REML variance-component estimation ($k\geq5$ recommended; Table~3). RELIEF's ICA found no vendor-associated components because ComBat-joint preprocessing had already removed vendor mean/scale effects, leaving insufficient residual vendor structure for ICA to detect. These constraints are inherent to the retrospective design; they do not invalidate the internal benchmark findings but bound their generalisability to similarly structured consortia.
+Three methodological observations converge on a single structural limitation of the dataset: only 3 vendors with 44 perfectly nested sites. The LME random-effects covariance matrix was singular in 56\% of cases because 3 vendor levels provide insufficient information for stable REML variance-component estimation ($k\geq5$ recommended; Table~3). RELIEF's ICA found no vendor-associated components because ComBat-joint preprocessing had already removed vendor mean/scale effects, leaving insufficient residual vendor structure for ICA to detect. These constraints are inherent to the retrospective design; they do not invalidate the internal benchmark findings but bound their generalisability to similarly structured consortia.
 
 \begin{table}[H]
 \centering
-\caption{LME convergence status by biomarker and cohort. FE = fixed-effects fallback (singular random-effects covariance matrix); LME = converged linear mixed-effects model. Only MD and AD achieved stable LME fits in both cohorts (4/16 cases, 25\%). All 12 FE-fallback cases produced post-harmonisation $\eta^2$ reductions exceeding 99\%, confirming that FE centring is sufficient for vendor-effect removal even when REML fails.}
+\caption{LME convergence status by biomarker and cohort (complete-case unified fits). FE = fixed-effects fallback (singular random-effects covariance matrix); LME = converged linear mixed-effects model. LME converged in 7 of 16 combinations (44\%); only MD and AD achieved stable LME fits in both cohorts. All 9 FE-fallback cases produced post-harmonisation $\eta^2$ reductions exceeding 99\%, confirming that FE centring is sufficient for vendor-effect removal even when REML fails. The single converged-LME outlier (HC, T2w-CSA; post $\eta^2=4.2\times10^{-3}$) reflects an unstable variance-component estimate rather than FE fallback.}
 \label{tab:lme}
 \begin{tabular}{llSSSl}
 \toprule
 Cohort & Biomarker & {$N$} & {$\eta^2$ (pre)} & {$\eta^2$ (post)} & Status \\
 \midrule
 \multirow{8}{*}{HC} 
-  & T2w-CSA   & 203 & 0.0531 & 4.71e-04 & FE \\
-  & GM-CSA    & 203 & 0.1777 & 4.00e-04 & FE \\
-  & MTR       & 194 & 0.1618 & 3.61e-04 & FE \\
-  & MTsat     & 190 & 0.3379 & 3.99e-05 & FE \\
-  & FA        & 198 & 0.2701 & 1.54e-04 & FE \\
-  & MD        & 198 & 0.3771 & 1.99e-04 & \textbf{LME} \\
-  & AD        & 198 & 0.6223 & 4.77e-04 & \textbf{LME} \\
-  & RD        & 198 & 0.2356 & 3.54e-04 & FE \\
+  & T2w-CSA   & 188 & 0.0530 & 4.19e-03 & \textbf{LME} \\
+  & GM-CSA    & 188 & 0.1761 & 5.09e-04 & FE \\
+  & MTR       & 188 & 0.2052 & 1.01e-04 & FE \\
+  & MTsat     & 188 & 0.3353 & 4.78e-05 & FE \\
+  & FA        & 188 & 0.2902 & 1.28e-04 & FE \\
+  & MD        & 188 & 0.4646 & 3.21e-04 & \textbf{LME} \\
+  & AD        & 188 & 0.7003 & 5.33e-04 & \textbf{LME} \\
+  & RD        & 188 & 0.2927 & 5.07e-04 & FE \\
 \midrule
 \multirow{8}{*}{ALL} 
-  & T2w-CSA   & 267 & 0.0424 & 2.14e-05 & FE \\
-  & GM-CSA    & 267 & 0.1701 & 3.08e-05 & FE \\
-  & MTR       & 254 & 0.1800 & 5.89e-04 & FE \\
-  & MTsat     & 249 & 0.3605 & 4.38e-05 & FE \\
-  & FA        & 260 & 0.2838 & 1.69e-04 & FE \\
-  & MD        & 260 & 0.4215 & 8.92e-05 & \textbf{LME} \\
-  & AD        & 260 & 0.6611 & 1.02e-04 & \textbf{LME} \\
-  & RD        & 260 & 0.2625 & 2.46e-04 & FE \\
+  & T2w-CSA   & 246 & 0.0441 & 3.65e-05 & FE \\
+  & GM-CSA    & 246 & 0.1673 & 2.06e-05 & FE \\
+  & MTR       & 246 & 0.2428 & 2.07e-05 & FE \\
+  & MTsat     & 246 & 0.3596 & 1.53e-04 & \textbf{LME} \\
+  & FA        & 246 & 0.3116 & 3.55e-04 & \textbf{LME} \\
+  & MD        & 246 & 0.5064 & 2.88e-04 & \textbf{LME} \\
+  & AD        & 246 & 0.7362 & 4.68e-04 & \textbf{LME} \\
+  & RD        & 246 & 0.3199 & 4.72e-04 & FE \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -253,19 +259,19 @@ Cohort & Biomarker & {$N$} & {$\eta^2$ (pre)} & {$\eta^2$ (post)} & Status \\
 
 This study provides, to our knowledge, the first systematic benchmark of statistical harmonisation methods for multi-vendor spinal cord qMRI biomarkers. Six principal findings emerge.
 
-First, baseline vendor effects in spinal cord qMRI are large ($\eta^2=0.28$, PERMANOVA $R^2=0.31$)---comparable to or exceeding brain imaging reports [9--11]---and dominate biological variation by orders of magnitude. For perspective, these effects approach the magnitude of pathology-related changes in quantitative metrics reported after spinal cord injury (14--20\% in R1 and magnetisation transfer saturation [7]), underscoring that unharmonised vendor offsets can masquerade as---or obscure---disease signal. Physical harmonisation, such as vendor-specific recalibration of magnetisation transfer metrics [7], offers a complementary acquisition-level route but requires prospective protocol control; statistical post-hoc harmonisation, as benchmarked here, applies retrospectively to existing consortia data. This justifies harmonisation as a default preprocessing step for multi-centre spinal cord studies---a need echoed by recent European quality initiatives [6] and by multicentre MRI harmonisation recommendations [21].
+First, baseline vendor effects in spinal cord qMRI are large ($\eta^2=0.31$, PERMANOVA $R^2=0.315$)---comparable to or exceeding brain imaging reports [9--11]---and dominate biological variation by orders of magnitude. For perspective, these effects approach the magnitude of pathology-related changes in quantitative metrics reported after spinal cord injury (14--20\% in R1 and magnetisation transfer saturation [7]), underscoring that unharmonised vendor offsets can masquerade as---or obscure---disease signal. Physical harmonisation, such as vendor-specific recalibration of magnetisation transfer metrics [7], offers a complementary acquisition-level route but requires prospective protocol control; statistical post-hoc harmonisation, as benchmarked here, applies retrospectively to existing consortia data. This justifies harmonisation as a default preprocessing step for multi-centre spinal cord studies---a need echoed by recent European quality initiatives [6] and by multicentre MRI harmonisation recommendations [21].
 
-Second, all five methods effectively eliminate vendor effects to statistical negligibility. The choice among methods therefore hinges not on whether they work, but on the downstream analytic goal. For subject-level inference (individual prediction, longitudinal change detection), LME/FE or per-metric ComBat may be preferred. For pooled-group analyses (case-control separation, multivariate classification), CovBat or RELIEF offer maximal multivariate purity---motivated by evidence that machine learning can exploit residual covariance differences undetectable by univariate ComBat [11], and that latent scanner structure may persist after mean/scale removal [12]. Our machine-learnability results quantify this hierarchy directly in spinal cord data: despite reducing vendor $\eta^2$ to ${\sim}10^{-4}$, LME/FE left a substantially detectable residual signature (AUC 0.80), whereas CovBat approached the chance level (0.54). The residual detectability of ComBat-harmonised profiles (AUC 0.66) matches the value reported for ComBat in brain imaging [11] (0.66 before covariance harmonisation), a striking cross-modality consistency suggesting that the residual signature ComBat leaves is a general property of location/scale adjustment rather than a cohort-specific artefact.
+Second, all five methods effectively eliminate vendor effects to statistical negligibility. The choice among methods therefore hinges not on whether they work, but on the downstream analytic goal. For subject-level inference (individual prediction, longitudinal change detection), LME/FE or per-metric ComBat may be preferred. For pooled-group analyses (case-control separation, multivariate classification), CovBat or RELIEF offer maximal multivariate purity---motivated by evidence that machine learning can exploit residual covariance differences undetectable by univariate ComBat [11], and that latent scanner structure may persist after mean/scale removal [12]. Our machine-learnability results quantify this hierarchy directly in spinal cord data: despite reducing vendor $\eta^2$ to ${\sim}10^{-4}$, LME/FE left a substantially detectable residual signature (AUC 0.79), whereas CovBat approached the chance level (0.54). The residual detectability of ComBat-harmonised profiles (AUC 0.64) is close to the value reported for ComBat in brain imaging [11] (0.66 before covariance harmonisation), a cross-modality consistency suggesting that the residual signature ComBat leaves is a general property of location/scale adjustment rather than a cohort-specific artefact.
 
 Third, the Pareto frontier between decontamination and preservation is reproducible across cohorts but is partly driven by real-world vendor imbalance: under balanced subsampling (Design C) the preservation hierarchy reversed, with ComBat-family methods converging to near-perfect preservation. The frontier should therefore be read as a descriptive characterisation of this dataset's imbalance structure rather than a stable method ranking, and the decontamination--preservation trade-off it visualises remains a useful framing for method selection.
 
 Fourth, LOVO external validation differentiates methods sharply: ComBat and ComBat-joint generalise without degradation to unseen vendors, while RELIEF and LME/FE fail. For consortia planning to add new vendor scanners, ComBat provides a robust default choice. Out-of-sample harmonisation for new sites is an active methodological frontier: ComBat-Predict provides a principled framework for applying trained harmonisation models to unseen sites without re-accessing reference data [16], and our LOVO results independently support ComBat-family methods for this deployment scenario.
 
-Fifth, the structural constraints revealed by this benchmark---vendor-site nesting, LME singular covariance in 75\% of cases, and RELIEF ICA inactivation---reflect the 3-vendor, perfectly-nested spine-generic design. These are not methodological failures but intrinsic dataset properties that bound interpretability: reported vendor effects cannot be partitioned into vendor-level versus site-level components, and LME/RELIEF's degradation in low-vendor-count settings is expected given their modelling assumptions. Larger consortia with more vendors and crossed designs would likely resolve these constraints.
+Fifth, the structural constraints revealed by this benchmark---vendor-site nesting, LME singular covariance in 56\% of cases, and RELIEF ICA inactivation---reflect the 3-vendor, perfectly-nested spine-generic design. These are not methodological failures but intrinsic dataset properties that bound interpretability: reported vendor effects cannot be partitioned into vendor-level versus site-level components, and LME/RELIEF's degradation in low-vendor-count settings is expected given their modelling assumptions. Larger consortia with more vendors and crossed designs would likely resolve these constraints.
 
-Sixth, the biological-signal amplification (1.7--3.7-fold for age across cohorts) demonstrates that harmonisation does not merely remove noise---it unmasks signal previously obscured by vendor variance. The concurrent improvement in pathology classification (AUC 0.52 to 0.62) mirrors the disease-classification gains reported after harmonisation in brain imaging [11], extending that observation to spinal cord biomarkers. This may have implications for clinical studies seeking to detect disease-related biomarker changes across sites.
+Sixth, the biological-signal amplification (4.8--6.2-fold for age across cohorts) demonstrates that harmonisation does not merely remove noise---it unmasks signal previously obscured by vendor variance. The concurrent improvement in pathology classification (AUC 0.52 to 0.62) mirrors the disease-classification gains reported after harmonisation in brain imaging [11], extending that observation to spinal cord biomarkers. This may have implications for clinical studies seeking to detect disease-related biomarker changes across sites.
 
-\textbf{Limitations.} (i) Vendor-site perfect nesting precludes decomposition of vendor-level versus site-level effects; our findings reflect the composite ``vendor-in-site'' effect relevant to practical consortia. (ii) The dataset covers only three vendors with substantial imbalance (Siemens 67\%); extrapolation to other manufacturers requires caution. (iii) LME converged only for MD and AD (25\%); the reported LME/FE preservation advantage ($r=0.84$) may reflect the minimal correction of the FE fallback rather than LME shrinkage. (iv) RELIEF's ICA inactivation ($q\geq0.99$ for all components) may be dataset-specific; Zhang et al.\ [12] demonstrated RELIEF's effectiveness in a three-site DTI study where latent vendor structure persisted after ComBat preprocessing---suggesting that consortia with stronger residual vendor-covariance structure may benefit from RELIEF, whereas our 44-site design with ComBat-joint preprocessing may have already exhausted this structure. (v) LOVO validation used z-score matching for unseen-vendor transformation---the standard ComBat-from-template approach [9]---but does not test prospective acquisition on genuinely new hardware; principled out-of-sample frameworks such as ComBat-Predict [16] offer a natural extension for prospective new-site harmonisation. (vi) This analysis was not pre-registered; however, all harmonisation methods were selected and evaluated on a pre-specified endpoint framework prior to analysis, and the complete analytical pipeline is publicly documented in the accompanying code repository, ensuring full computational reproducibility.
+\textbf{Limitations.} (i) Vendor-site perfect nesting precludes decomposition of vendor-level versus site-level effects; our findings reflect the composite ``vendor-in-site'' effect relevant to practical consortia. (ii) The dataset covers only three vendors with substantial imbalance (Siemens 67\%); extrapolation to other manufacturers requires caution. (iii) LME converged in only 7 of 16 biomarker$\times$cohort combinations (44\%); the reported LME/FE preservation advantage ($r=0.82$) may reflect the minimal correction of the FE fallback rather than LME shrinkage. (iv) RELIEF's ICA inactivation ($q\geq0.99$ for all components) may be dataset-specific; Zhang et al.\ [12] demonstrated RELIEF's effectiveness in a three-site DTI study where latent vendor structure persisted after ComBat preprocessing---suggesting that consortia with stronger residual vendor-covariance structure may benefit from RELIEF, whereas our 44-site design with ComBat-joint preprocessing may have already exhausted this structure. (v) LOVO validation used z-score matching for unseen-vendor transformation---the standard ComBat-from-template approach [9]---but does not test prospective acquisition on genuinely new hardware; principled out-of-sample frameworks such as ComBat-Predict [16] offer a natural extension for prospective new-site harmonisation. (vi) This analysis was not pre-registered; however, all harmonisation methods were selected and evaluated on a pre-specified endpoint framework prior to analysis, and the complete analytical pipeline is publicly documented in the accompanying code repository, ensuring full computational reproducibility.
 
 \textbf{Conclusion.} Statistical harmonisation effectively eliminates vendor effects in multi-centre spinal cord qMRI and is recommended as a default preprocessing step. ComBat provides the best balance of vendor removal, generalisability to unseen manufacturers, and subject-level preservation, and is recommended for broad multi-centre deployment.
 

@@ -2,9 +2,9 @@ method,task,auc_mean,auc_sd,n
 Original,vendor,0.9862,0.0016,246
 Original,pathology,0.52,0.0236,246
 Original,sex,0.6463,0.0203,246
-ComBat,vendor,0.6598,0.0208,246
-ComBat,pathology,0.6146,0.015,246
-ComBat,sex,0.6663,0.0145,246
+ComBat,vendor,0.6361,0.022,246
+ComBat,pathology,0.6209,0.016,246
+ComBat,sex,0.6651,0.0154,246
 ComBat-joint,vendor,0.6269,0.0208,246
 ComBat-joint,pathology,0.6213,0.0167,246
 ComBat-joint,sex,0.6645,0.0153,246
@@ -14,7 +14,7 @@ CovBat,sex,0.6676,0.0167,246
 RELIEF,vendor,0.6098,0.0223,246
 RELIEF,pathology,0.595,0.0188,246
 RELIEF,sex,0.6719,0.017,246
-LME,vendor,0.8001,0.0147,246
-LME,pathology,0.6037,0.018,246
-LME,sex,0.6663,0.0139,246
+LME,vendor,0.7912,0.017,246
+LME,pathology,0.6069,0.0179,246
+LME,sex,0.6671,0.0153,246
 Permutation,vendor,0.4947,0.0378,246
