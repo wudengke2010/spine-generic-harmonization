@@ -95,7 +95,7 @@ def draw_panel_A(ax, x0, y0, w, h):
     ax.text(left_x, y_top_up - 1.5, "267 subjects",
             ha="left", va="top",
             fontsize=14, fontweight="bold", color="#222", zorder=5)
-    ax.text(left_x, y_top_up - 5.6, "42 sites  ·  13 scanner models",
+    ax.text(left_x, y_top_up - 5.6, "43 sites  ·  13 scanner models",
             ha="left", va="top", fontsize=9, color="#444", zorder=5)
 
     chip_w = (w - 6.0) * 0.26
@@ -117,7 +117,7 @@ def draw_panel_A(ax, x0, y0, w, h):
     bar_h  = 3.6
     bar_y  = y0 + 2.6
     ax.text((bar_x0 + bar_x1) / 2, bar_y + bar_h + 1.6,
-            "Vendor composition (n)",
+            "Vendor composition — n (% of full dataset)",
             ha="center", va="bottom",
             fontsize=9, fontweight="bold", color="#333", zorder=5)
 
@@ -129,17 +129,19 @@ def draw_panel_A(ax, x0, y0, w, h):
         ax.add_patch(Rectangle((xc, bar_y), seg_w, bar_h,
                                facecolor=VENDOR_COLOR[v],
                                edgecolor="black", linewidth=0.6, zorder=3))
+        pct = round(100 * n / total)
+        label = f"{v}\nn={n} ({pct}%)" if seg_w < 18 else f"{v}   n = {n} ({pct}%)"
         ax.text(xc + seg_w / 2, bar_y + bar_h / 2,
-                f"{v}   n = {n}",
+                label,
                 ha="center", va="center",
-                fontsize=8.4, color="white", fontweight="bold",
+                fontsize=7.5 if seg_w < 18 else 8.4, color="white", fontweight="bold",
                 zorder=4)
         xc += seg_w
 
 
 def draw_panel_B(ax, x0, y0, w, h):
     panel_frame(ax, x0, y0, w, h, "B", "Biomarker extraction at C2-C3",
-                subtitle="Spinal Cord Toolbox v6.4  ·  8 per-subject scalars")
+                subtitle="Spinal Cord Toolbox v7.4  ·  8 per-subject scalars")
     groups = [
         ("T2w", ["Cord CSA"]),
         ("T2*", ["GM CSA"]),

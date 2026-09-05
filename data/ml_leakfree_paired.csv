@@ -1,0 +1,11 @@
+comparison,mean_diff,t,p_ttest,p_wilcoxon
+ComBat vs Original,0.1048,18.943,0.0,0.0
+ComBat-joint vs Original,0.0982,18.248,0.0,0.0
+CovBat vs Original,0.0623,8.35,0.0,0.0
+RELIEF vs Original,0.0694,10.947,0.0,0.0
+LME vs Original,0.0888,19.248,0.0,0.0
+z-test ComBat vs Original,,1.823,0.06832,
+z-test ComBat-joint vs Original,,1.714,0.08655,
+z-test CovBat vs Original,,1.078,0.28085,
+z-test RELIEF vs Original,,1.219,0.22289,
+z-test LME vs Original,,1.51,0.13112,
