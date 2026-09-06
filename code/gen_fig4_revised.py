@@ -14,8 +14,10 @@ COLORS = {"GE":"#0072B2","Philips":"#E69F00","Siemens":"#009E73"}
 
 # legacy approximate LOVO age R2 values (unchanged by z-scoring)
 AGE_LOVO = {"Original":0.0015,"ComBat":0.0089,"ComBat-joint":0.0088,"CovBat":0.0094,"RELIEF":0.0040,"LME":0.0042}
-# legacy test-vendor r pre/post (structural property, unchanged)
-R_LOVO = {"Original":1.0,"ComBat":1.0,"ComBat-joint":1.0,"CovBat":0.85,"RELIEF":0.91,"LME":1.0}
+# test-vendor r pre/post: fold means computed from lovo_summary.csv
+# CovBat {0.8514, 0.9490, 0.9108} -> 0.904 ; RELIEF {0.9249, 0.9725, 0.9603} -> 0.953
+# affine methods are 1.0 by construction
+R_LOVO = {"Original":1.0,"ComBat":1.0,"ComBat-joint":1.0,"CovBat":0.904,"RELIEF":0.953,"LME":1.0}
 
 fig = plt.figure(figsize=(12,10))
 gs = GridSpec(2,2, figure=fig, hspace=0.32, wspace=0.28)
@@ -36,7 +38,7 @@ ax1.set_yscale("log")
 ax1.set_ylim(1e-5, 5e-1)
 ax1.axhline(0.011, color="gray", linestyle="--", linewidth=1)
 ax1.text(5.5, 0.015, r"Chance level ($\eta^2\approx0.011$)", ha="right", va="bottom", fontsize=8, color="gray")
-ax1.set_title("(A) Vendor Effect After LOVO Harmonisation", fontweight="bold", fontsize=11)
+ax1.set_title("(a) Vendor Effect After LOVO Harmonisation", fontweight="bold", fontsize=11)
 ax1.legend(title="", loc="upper left", fontsize=8, framealpha=0.9)
 
 # Panel B: PERMANOVA R2 (log scale so baseline and failed methods are not truncated)
@@ -47,6 +49,8 @@ for fi, fold in enumerate(FOLDS):
     ps = sub["permanova_p"].values
     ax2.bar(x + fi*width - width, vals, width, label=f"Leave {fold} out", color=COLORS[fold], edgecolor="k", linewidth=0.5)
     for mi, (v,p) in enumerate(zip(vals, ps)):
+        if mi == 0:
+            continue  # Original baseline: no harmonisation applied, significance vs itself is meaningless
         yy = max(v * 1.6, 2.5e-4)  # annotation above bar top, inside axes on log scale
         if p < 0.001:
             ax2.text(x[mi]+fi*width-width, yy, "***", ha="center", va="bottom", fontsize=7)
@@ -59,7 +63,7 @@ for fi, fold in enumerate(FOLDS):
 ax2.set_xticks(x)
 ax2.set_xticklabels([METHOD_LABEL[m] for m in METHODS], rotation=30, ha="right")
 ax2.set_ylabel("PERMANOVA $R^2$ (log scale)")
-ax2.set_title("(B) Multivariate Vendor Effect (PERMANOVA)", fontweight="bold", fontsize=11)
+ax2.set_title("(b) Multivariate Vendor Effect (PERMANOVA)", fontweight="bold", fontsize=11)
 ax2.legend(title="", loc="upper left", fontsize=8, framealpha=0.9)
 ax2.set_yscale("log")
 ax2.set_ylim(5e-5, 0.7)
@@ -71,7 +75,7 @@ ax3.bar(x, age_vals, color="#999999", edgecolor="k", linewidth=0.5)
 ax3.set_xticks(x)
 ax3.set_xticklabels([METHOD_LABEL[m] for m in METHODS], rotation=30, ha="right")
 ax3.set_ylabel("Age $R^2$ (mean)")
-ax3.set_title("(C) Biological Signal Preservation (Age)", fontweight="bold", fontsize=11)
+ax3.set_title("(c) Biological Signal Preservation (Age)", fontweight="bold", fontsize=11)
 ax3.set_ylim(0, 0.012)
 
 # Panel D: r_pre,post on test vendor
@@ -81,7 +85,7 @@ ax4.bar(x, r_vals, color="#999999", edgecolor="k", linewidth=0.5)
 ax4.set_xticks(x)
 ax4.set_xticklabels([METHOD_LABEL[m] for m in METHODS], rotation=30, ha="right")
 ax4.set_ylabel("$r$ (pre vs post, test vendor)")
-ax4.set_title("(D) Data Distortion on Held-Out Vendor", fontweight="bold", fontsize=11)
+ax4.set_title("(d) Data Distortion on Held-Out Vendor", fontweight="bold", fontsize=11)
 ax4.set_ylim(0, 1.1)
 
 for ext in ["pdf","png"]:

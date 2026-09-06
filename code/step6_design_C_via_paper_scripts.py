@@ -16,7 +16,11 @@ random seed, it:
        and computes:
           - mean vendor η² across 8 biomarkers
           - PERMANOVA R² (vendor)
-          - within-vendor r_{pre,post}
+          - r_pre_post  : pooled Pearson r (ALL subjects; the same
+                          metric as Table 2 / step4 of the paper)
+          - r_within    : within-vendor Pearson r (diagnostic; equals
+                          1 by construction for pure location-shift
+                          methods such as LME/FE)
           - mean age semi-partial R² gain vs baseline
 Aggregate over K seeds → mean ± SD.
 
@@ -124,6 +128,24 @@ def permanova_r2(X: np.ndarray, vendor: np.ndarray,
     return r2, float(res["p-value"])
 
 
+def pooled_r(Xpre: np.ndarray, Xpost: np.ndarray) -> float:
+    """Pooled per-metric Pearson r, averaged over biomarkers.
+
+    This is the paper-canonical subject-preservation metric (identical
+    to Table 2 / step4 evaluation): correlation between pre- and post-
+    harmonisation biomarker vectors over the whole subsample."""
+    rs = []
+    for j in range(Xpre.shape[1]):
+        a, b = Xpre[:, j], Xpost[:, j]
+        ok = np.isfinite(a) & np.isfinite(b)
+        if ok.sum() < 5:
+            continue
+        r, _ = stats.pearsonr(a[ok], b[ok])
+        if np.isfinite(r):
+            rs.append(r)
+    return float(np.mean(rs)) if rs else np.nan
+
+
 def within_vendor_r(Xpre: np.ndarray, Xpost: np.ndarray,
                     vendor: np.ndarray) -> float:
     rs = []
@@ -211,7 +233,7 @@ def one_seed(df_subset: pd.DataFrame, seed: int,
     base_age = age_r2_mean(X, df_subset)
     rows.append(dict(seed=seed, method="Original",
                      eta2=base_eta, R2_perm=base_R2, p_perm=base_p,
-                     r_pre_post=1.0, age_R2=base_age,
+                     r_pre_post=1.0, r_within=1.0, age_R2=base_age,
                      age_R2_gain=0.0, n=len(df_subset)))
 
     for method, spec in METHOD_SPECS.items():
@@ -241,11 +263,12 @@ def one_seed(df_subset: pd.DataFrame, seed: int,
         Xc = X[ok_rows]; Yc = Y[ok_rows]; vc = vendor[ok_rows]
         eta = mean_eta2(Yc, vc)
         R2, pv = permanova_r2(Yc, vc, n_perm=999)
-        r = within_vendor_r(Xc, Yc, vc)
+        r = pooled_r(Xc, Yc)                # paper-canonical (Table 2)
+        rw = within_vendor_r(Xc, Yc, vc)    # diagnostic
         ar2 = age_r2_mean(Yc, df_subset.iloc[ok_rows])
         rows.append(dict(seed=seed, method=method,
                          eta2=eta, R2_perm=R2, p_perm=pv,
-                         r_pre_post=r, age_R2=ar2,
+                         r_pre_post=r, r_within=rw, age_R2=ar2,
                          age_R2_gain=ar2 - base_age,
                          n=int(ok_rows.sum())))
 
@@ -261,13 +284,13 @@ def make_figure(res: pd.DataFrame, full_ref: Dict[str, Dict[str, float]],
                 out_dir: Path, cohort: str) -> None:
     fig, axes = plt.subplots(1, 3, figsize=(11.5, 3.8))
     panels = [
-        ("R2_perm",     "(A)  Residual vendor structure\n"
+        ("R2_perm",     "(a)  Residual vendor structure\n"
                         "$R^{2}_{\\mathrm{PERMANOVA}}$ (log)",
          "lower is better", True),
-        ("r_pre_post",  "(B)  Subject preservation\n"
+        ("r_pre_post",  "(b)  Subject preservation (pooled)\n"
                         "$\\bar{r}_{\\mathrm{pre,post}}$",
          "higher is better", False),
-        ("age_R2_gain", "(C)  Biology unmasking\n"
+        ("age_R2_gain", "(c)  Biology unmasking\n"
                         "$\\Delta$ age $R^{2}$ vs baseline",
          "higher is better", False),
     ]
@@ -313,7 +336,7 @@ def make_figure(res: pd.DataFrame, full_ref: Dict[str, Dict[str, float]],
     fig.legend(handles=handles, loc="upper center",
                bbox_to_anchor=(0.5, 1.02), ncol=2, frameon=False, fontsize=8.5)
     fig.suptitle(
-        f"Design C — Balanced-subsample robustness "
+        f"Design C — Reduced-imbalance subsample robustness "
         f"({cohort} cohort, K = {res['seed'].nunique()} seeds; "
         f"$n \\approx$ {int(res['n'].median())} per seed)",
         fontsize=10, fontweight="bold", y=1.07)
@@ -380,7 +403,7 @@ def main(master_csv: Path, code_dir: Path, out_dir: Path,
     full_rows = one_seed(df, seed=99999, code_dir=code_dir,
                          cohort=cohort, tmp_root=tmp_root)
     full_ref = {r["method"]: {k: r[k] for k in
-                              ("eta2", "R2_perm", "r_pre_post",
+                              ("eta2", "R2_perm", "r_pre_post", "r_within",
                                "age_R2", "age_R2_gain")}
                 for r in full_rows}
 
@@ -391,6 +414,7 @@ def main(master_csv: Path, code_dir: Path, out_dir: Path,
         eta2_mean=("eta2", "mean"), eta2_sd=("eta2", "std"),
         R2_mean=("R2_perm", "mean"), R2_sd=("R2_perm", "std"),
         r_mean=("r_pre_post", "mean"), r_sd=("r_pre_post", "std"),
+        r_within_mean=("r_within", "mean"), r_within_sd=("r_within", "std"),
         age_gain_mean=("age_R2_gain", "mean"),
         age_gain_sd=("age_R2_gain", "std"),
     ).reindex(METHOD_ORDER)

@@ -128,13 +128,7 @@ def gen_fig2(master, comp, perm, umap):
     print("[Fig2] Baseline vendor effects")
     vendors = ["GE", "Philips", "Siemens"]
     v_colors = [VENDOR_COLOR[v] for v in vendors]
-    # Complete-case HC analysis sample (N=188): all 8 biomarkers + age + sex + vendor
-    # present — identical filter to step3_refit_completecase.py / step4_eval_completecase.py,
-    # so violins / ANOVA p / eta2 annotations share the same subjects as Table 2.
-    CC_BIOMARKERS = ["T2w_CSA", "GM_CSA_mm2", "MTR", "MTsat",
-                     "FA", "MD", "AD", "RD"]
-    hc = master[master["pathology"] == "HC"].dropna(
-        subset=CC_BIOMARKERS + ["age", "sex", "vendor"])
+    hc = master[master["pathology"] == "HC"]
     hc_orig = comp[(comp["cohort"] == "HC") & (comp["method"] == "Original")].set_index("biomarker")
 
     fig = plt.figure(figsize=(13, 9))
@@ -290,7 +284,7 @@ def gen_fig3(comp, perm):
     Panels C & D: Linear bars with value labels and star markers.
     """
     print("[Fig3] Harmonization performance")
-    fig, axes = plt.subplots(2, 2, figsize=(13, 10))
+    fig, axes = plt.subplots(2, 2, figsize=(12, 7.5))
     axes = axes.flatten()
 
     cohorts = ["HC", "ALL"]
@@ -383,19 +377,19 @@ def gen_fig3(comp, perm):
     add_log_bars(axes[0],
                  lambda c, m: agg[(agg["cohort"] == c) & (agg["method"] == m)]["eta2_mean"].values[0],
                  lambda c: agg[(agg["cohort"] == c) & (agg["method"] == "Original")]["eta2_mean"].values[0],
-                 "log$_{10}$($\\eta^2$)", "Univariate vendor effect (zoomed)", "A")
+                 "log$_{10}$($\\eta^2$)", "Univariate vendor effect (zoomed)", "a")
 
     # Panel B: zoomed log PERMANOVA R2
     add_log_bars(axes[1],
                  lambda c, m: perm[(perm["cohort"] == c) & (perm["method"] == m)]["R2"].values[0],
                  lambda c: perm[(perm["cohort"] == c) & (perm["method"] == "Original")]["R2"].values[0],
-                 "log$_{10}$(PERMANOVA $R^2$)", "Multivariate vendor effect (zoomed)", "B")
+                 "log$_{10}$(PERMANOVA $R^2$)", "Multivariate vendor effect (zoomed)", "b")
 
     # Panel C: Age R2 (linear)
     add_linear_bars(axes[2],
                     lambda c, m: agg[(agg["cohort"] == c) & (agg["method"] == m)]["age_r2_mean"].values[0],
                     lambda c: agg[(agg["cohort"] == c) & (agg["method"] == "Original")]["age_r2_mean"].values[0],
-                    "Age $R^2$ (mean)", "Age semi-partial $R^2$", "C")
+                    "Age $R^2$ (mean)", "Age semi-partial $R^2$", "c")
 
     # Star for best method in Panel C (CovBat HC)
     best_idx_c = methods_plot.index("CovBat")
@@ -412,7 +406,7 @@ def gen_fig3(comp, perm):
     add_linear_bars(axes[3],
                     lambda c, m: agg[(agg["cohort"] == c) & (agg["method"] == m)]["sex_r2_mean"].values[0],
                     lambda c: agg[(agg["cohort"] == c) & (agg["method"] == "Original")]["sex_r2_mean"].values[0],
-                    "Sex $R^2$ (mean)", "Sex semi-partial $R^2$", "D")
+                    "Sex $R^2$ (mean)", "Sex semi-partial $R^2$", "d")
 
     # Star for best method in Panel D (RELIEF HC)
     best_idx_d = methods_plot.index("RELIEF")
@@ -436,8 +430,8 @@ def gen_fig3(comp, perm):
                frameon=False, bbox_to_anchor=(0.5, 1.01))
 
     fig.suptitle("Harmonization performance across evaluation endpoints",
-                 fontsize=12, fontweight="bold", y=1.05)
-    fig.subplots_adjust(hspace=0.45, wspace=0.30, top=0.90, bottom=0.06, left=0.08, right=0.97)
+                 fontsize=12, fontweight="bold", y=1.02)
+    fig.subplots_adjust(hspace=0.40, wspace=0.28, top=0.93, bottom=0.08, left=0.08, right=0.97)
     for fmt in ["png", "pdf"]:
         fig.savefig(OUT_DIR / f"Fig3_performance.{fmt}", dpi=300, bbox_inches="tight")
     plt.close(fig)
@@ -462,7 +456,7 @@ def gen_fig4(comp, perm):
 
     for idx, cohort in enumerate(cohorts):
         ax = axes[idx]
-        ax.text(-0.08, 1.06, chr(65 + idx), transform=ax.transAxes,
+        ax.text(-0.08, 1.06, chr(97 + idx), transform=ax.transAxes,
                 fontsize=12, fontweight="bold", va="top")
         ax.set_title(f"{cohort} cohort (N={'188' if cohort == 'HC' else '246'})",
                      fontsize=10, fontweight="bold", pad=8)
@@ -649,82 +643,88 @@ def gen_fig5(comp):
 # FigS: Design C robustness
 # ============================================================
 def gen_figs():
-    """Design C balanced subsample robustness analysis."""
-    print("[FigS] Design C robustness")
-    if not DESIGN_C.exists():
-        print(f"  WARNING: {DESIGN_C} not found")
+    """Design C reduced-imbalance + true-equal-n subsample robustness.
+
+    Reads the canonical wrapper outputs (step6_design_C_via_paper_scripts.py
+    and step6_design_C_equaln.py, unified pooled-r metric) and draws:
+      (a) pooled r_pre_post (paper-canonical, Table 2 metric)
+      (b) within-vendor r_pre_post (diagnostic; =1 by construction for
+          pure location-shift methods such as LME/FE)
+      (c) vendor eta2 (log scale)
+    Each panel shows 5 methods x 2 subsample designs (reduced-imbalance
+    n~98; true-equal-n n=75), with the full-cohort pooled-r reference.
+    """
+    print("[FigS] Design C robustness (reduced-imbalance + equal-n)")
+    dc_path = Path("E:/boshi/qm_harmonization_paper/paper/designC_v2/results_design_C.csv")
+    eq_path = Path("E:/boshi/qm_harmonization_paper/paper/equaln_v2/results_design_C_equaln.csv")
+    if not (dc_path.exists() and eq_path.exists()):
+        print(f"  WARNING: design-C result CSVs not found:\n    {dc_path}\n    {eq_path}")
         return
 
-    df = pd.read_csv(DESIGN_C)
-    methods_here = [m for m in ["Original", "LME", "ComBat", "ComBat-joint", "RELIEF", "CovBat"]
-                    if m in df["method"].values]
-    methods_no_orig = [m for m in methods_here if m != "Original"]
+    dc = pd.read_csv(dc_path)
+    eq = pd.read_csv(eq_path)
+    designs = [("Reduced imbalance (n$\\approx$98)", dc),
+               ("True equal-n (n=75)", eq)]
+    methods_no_orig = ["LME", "ComBat", "ComBat-joint", "RELIEF", "CovBat"]
+    # Full-cohort pooled r reference (Table 2, HC)
+    full_ref_r = {"LME": 0.816, "ComBat": 0.789, "ComBat-joint": 0.806,
+                  "RELIEF": 0.791, "CovBat": 0.782}
 
-    fig, axes = plt.subplots(1, 2, figsize=(11, 5))
+    fig, axes = plt.subplots(1, 3, figsize=(15, 4.6))
+    panels = [
+        ("r_pre_post", "(a) Subject preservation, pooled $r_{pre,post}$",
+         "higher is better", False),
+        ("r_within",   "(b) Subject preservation, within-vendor $r$",
+         "higher is better", False),
+        ("eta2",       "(c) Residual vendor $\\eta^2$",
+         "lower is better", True),
+    ]
+    width = 0.35
+    for k, (col, ttl, sub, logy) in enumerate(panels):
+        ax = axes[k]
+        ax.text(-0.06, 1.06, chr(97 + k), transform=ax.transAxes,
+                fontsize=12, fontweight="bold", va="top")
+        ax.set_title(ttl + f"\n({sub})", fontsize=9.5, fontweight="bold", pad=8)
+        for di, (dlabel, ddf) in enumerate(designs):
+            xs = np.arange(len(methods_no_orig)) + (di - 0.5) * width
+            data = [ddf[ddf["method"] == m][col].dropna().values
+                    for m in methods_no_orig]
+            bp = ax.boxplot(data, positions=xs, widths=width,
+                            patch_artist=True, showfliers=False,
+                            medianprops={"color": "black", "linewidth": 1.0},
+                            whiskerprops={"linewidth": 0.6},
+                            capprops={"linewidth": 0.6})
+            for patch, m in zip(bp["boxes"], methods_no_orig):
+                patch.set_facecolor(METHOD_COLOR[m])
+                patch.set_alpha(0.75 if di == 0 else 0.35)
+            for i, vals in enumerate(data):
+                jitter = (np.random.RandomState(7 + di).rand(len(vals)) - 0.5) * width * 0.5
+                ax.scatter(xs[i] + jitter, vals, s=7, alpha=0.3,
+                           color="black", zorder=3)
+        if col == "r_pre_post":
+            for i, m in enumerate(methods_no_orig):
+                ax.hlines(full_ref_r[m], i - 0.45, i + 0.45,
+                          colors="black", linestyles="--", linewidth=1.0, zorder=4)
+        ax.set_xticks(np.arange(len(methods_no_orig)))
+        ax.set_xticklabels([METHOD_LABEL[m] for m in methods_no_orig],
+                           fontsize=8, rotation=15, ha="right")
+        if logy:
+            ax.set_yscale("log")
+        ax.yaxis.grid(True, linestyle=":", linewidth=0.4, alpha=0.6)
+        ax.set_axisbelow(True)
 
-    # Panel A: r_pre_post
-    ax = axes[0]
-    ax.text(-0.08, 1.06, "A", transform=ax.transAxes, fontsize=12, fontweight="bold", va="top")
-    ax.set_title("Subject preservation (r$_{pre,post}$)\nunder balanced subsampling",
-                 fontsize=9.5, fontweight="bold", pad=8)
-    data_r = [df[df["method"] == m]["r_pre_post"].dropna().values for m in methods_no_orig]
-    bp = ax.boxplot(data_r, tick_labels=[METHOD_LABEL[m] for m in methods_no_orig],
-                    patch_artist=True, showfliers=True, widths=0.5,
-                    flierprops={"markersize": 3, "alpha": 0.3, "marker": "o"},
-                    medianprops={"color": "black", "linewidth": 1.0},
-                    whiskerprops={"linewidth": 0.6},
-                    capprops={"linewidth": 0.6})
-    for patch, m in zip(bp["boxes"], methods_no_orig):
-        patch.set_facecolor(METHOD_COLOR[m])
-        patch.set_alpha(0.55)
-    for i, vals in enumerate(data_r):
-        jitter = np.random.normal(0, 0.04, len(vals))
-        ax.scatter(np.full(len(vals), i + 1) + jitter, vals, s=8, alpha=0.25, color="black", zorder=3)
-
-    # Mean labels: placed above each box with alternating vertical offsets
-    label_offsets_y = [0.012, -0.015, 0.018, -0.010, 0.008]
-    for i, vals in enumerate(data_r):
-        mean_v = np.mean(vals)
-        off_idx = i % len(label_offsets_y)
-        label_y = mean_v + label_offsets_y[off_idx]
-        label_y = max(0.80, min(label_y, 1.04))
-        ax.text(i + 1, label_y, f"$\\mu$={mean_v:.3f}", fontsize=7, color="#333",
-                va="center", ha="center",
-                bbox=dict(boxstyle="round,pad=0.15", facecolor="white", alpha=0.8, edgecolor="none"))
-    ax.set_ylabel("r$_{pre,post}$", fontsize=9.5)
-    ax.set_ylim(0.76, 1.06)
-    ax.tick_params(labelsize=8, axis="x", rotation=15)
-
-    # Panel B: eta2
-    ax = axes[1]
-    ax.text(-0.08, 1.06, "B", transform=ax.transAxes, fontsize=12, fontweight="bold", va="top")
-    ax.set_title("Vendor effect ($\\eta^2$) under\nbalanced subsampling",
-                 fontsize=9.5, fontweight="bold", pad=8)
-    data_e = [df[df["method"] == m]["eta2"].dropna().values for m in methods_no_orig]
-    bp2 = ax.boxplot(data_e, tick_labels=[METHOD_LABEL[m] for m in methods_no_orig],
-                     patch_artist=True, showfliers=True, widths=0.5,
-                     flierprops={"markersize": 3, "alpha": 0.3, "marker": "o"},
-                     medianprops={"color": "black", "linewidth": 1.0},
-                     whiskerprops={"linewidth": 0.6},
-                     capprops={"linewidth": 0.6})
-    for patch, m in zip(bp2["boxes"], methods_no_orig):
-        patch.set_facecolor(METHOD_COLOR[m])
-        patch.set_alpha(0.55)
-    for i, vals in enumerate(data_e):
-        jitter = np.random.normal(0, 0.04, len(vals))
-        ax.scatter(np.full(len(vals), i + 1) + jitter, vals, s=8, alpha=0.25, color="black", zorder=3)
-    ax.set_ylabel("Vendor $\\eta^2$", fontsize=9.5)
-    ax.set_yscale("log")
-    ax.tick_params(labelsize=8, axis="x", rotation=15)
-    orig_eta = df[df["method"] == "Original"]["eta2"].mean()
-    ax.axhline(y=orig_eta, color=WONG["grey"], linestyle="--", linewidth=1.0)
-    ax.text(0.02, orig_eta, f" baseline $\\eta^2$={orig_eta:.3f}",
-            fontsize=7.5, color="#555",
-            transform=ax.get_yaxis_transform(), va="center", ha="left")
-
-    fig.suptitle("Design C: Robustness to balanced vendor composition (20 random seeds, n$\\approx$98/seed)",
-                 fontsize=11, fontweight="bold", y=1.03)
-    fig.subplots_adjust(wspace=0.30, top=0.82, bottom=0.12, left=0.08, right=0.97)
+    handles = [Patch(facecolor="#888", alpha=0.75, edgecolor="black",
+                     label="Reduced imbalance (n$\\approx$98)"),
+               Patch(facecolor="#888", alpha=0.35, edgecolor="black",
+                     label="True equal-n (n=75)"),
+               Line2D([0], [0], color="black", ls="--", lw=1.0,
+                      label="Full-cohort pooled $r$ (Table 2)")]
+    fig.legend(handles=handles, loc="upper center", ncol=3, fontsize=8.5,
+               frameon=False, bbox_to_anchor=(0.5, 1.01))
+    fig.suptitle("Design C subsample analyses: reduced-imbalance and true-equal-n "
+                 "(HC cohort, 20 random seeds each)",
+                 fontsize=11, fontweight="bold", y=1.07)
+    fig.subplots_adjust(wspace=0.28, top=0.80, bottom=0.16, left=0.06, right=0.98)
     for fmt in ["png", "pdf"]:
         fig.savefig(OUT_DIR / f"FigS_design_C_robustness.{fmt}", dpi=300, bbox_inches="tight")
     plt.close(fig)
