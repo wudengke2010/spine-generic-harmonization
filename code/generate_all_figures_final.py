@@ -482,31 +482,25 @@ def gen_fig4(comp, perm):
         ax.plot([xs[i] for i in order], [ys[i] for i in order],
                 linestyle="--", color="#aaa", linewidth=1.0, zorder=2)
 
-        # Labels: position to avoid overlap, use leader lines
-        label_offsets = {
-            "LME":          (-0.30,  0.008, "right"),
-            "ComBat":       ( 0.12,  0.010, "left"),
-            "ComBat-joint": ( 0.15, -0.015, "left"),
-            "RELIEF":       ( 0.15,  0.012, "left"),
-            "CovBat":       (-0.15, -0.015, "right"),
-        }
-        for xi, yi, m in zip(xs, ys, methods_plot):
-            dx, dy, ha = label_offsets[m]
-            ax.annotate(METHOD_LABEL[m], xy=(xi, yi), xytext=(xi + dx, yi + dy),
-                        fontsize=8.5, fontweight="bold", color=METHOD_COLOR[m],
-                        ha=ha,
-                        arrowprops=dict(arrowstyle="-", color=METHOD_COLOR[m], lw=0.5,
-                                        connectionstyle="arc3,rad=0.1"))
+        # Method identification is provided by the single figure-level legend
+        # below the panels (leader-line labels removed: they duplicated the
+        # legend and overflowed the axes frame).
 
         ax.set_xlabel("$-$log$_{10}$(PERMANOVA $R^2$)", fontsize=9)
         ax.set_ylabel("r$_{pre,post}$ (subject preservation)", fontsize=9)
         ax.tick_params(labelsize=7.5)
         y_pad = (max(ys) - min(ys)) * 0.25
         ax.set_ylim(min(ys) - y_pad, max(ys) + y_pad)
-        x_pad = (max(xs) - min(xs)) * 0.15
-        ax.set_xlim(min(xs) - x_pad, max(xs) + x_pad * 1.3)
+        x_pad = (max(xs) - min(xs)) * 0.20
+        ax.set_xlim(min(xs) - x_pad, max(xs) + x_pad)
         ax.text(0.97, 0.03, "Pareto frontier", transform=ax.transAxes,
                 fontsize=8, color="#999", ha="right", style="italic")
+        # Note the compressed x-range in panel b (ALL): the five methods are
+        # much closer on this axis than in panel a (HC).
+        if idx == 1:
+            ax.text(0.03, 0.03, "note: compressed\nx-axis range vs. (a)",
+                    transform=ax.transAxes, fontsize=7, color="#666",
+                    ha="left", va="bottom", style="italic")
 
     handles = [Line2D([0], [0], marker="o", color="w", markerfacecolor=METHOD_COLOR[m],
                       markersize=9, label=METHOD_LABEL[m], markeredgecolor="black",
