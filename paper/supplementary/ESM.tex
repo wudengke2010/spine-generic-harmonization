@@ -214,7 +214,7 @@ In the reduced-imbalance design the pooled-$r$ preservation hierarchy was retain
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{FigS4_covariance.pdf}
-\caption{Cross-metric covariance structure preservation. \textbf{(a)} Pearson correlation matrices of the eight biomarkers (HC cohort, $N=188$) before and after each method. \textbf{(b)} Frobenius distance between the correlation matrices of each pair of methods (lower = more similar covariance structure). Expressed relative to the total Frobenius norm of the original correlation matrix ($\|R_{\mathrm{orig}}\|_F=4.08$ in HC, $4.07$ in ALL), all methods displaced the covariance structure by 38.1--41.3\% in HC (ComBat 38.1\%, LME/FE 38.3\%, ComBat-joint 38.5\%, RELIEF 40.3\%, CovBat 41.3\%; 40.2--43.0\% in ALL), so covariance preservation holds only in relative terms. CovBat and RELIEF are the closest to each other (HC: 0.09, ALL: 0.08), indicating near-identical covariance structure despite the additional ICA round-trip in RELIEF. ComBat-joint and ComBat are also close (HC: 0.05, ALL: 0.04), showing that joint empirical Bayes has limited impact on the covariance structure beyond the per-metric ComBat baseline. The location--scale methods (ComBat HC: 1.55, ALL: 1.64; LME/FE HC: 1.56, ALL: 1.65) remain marginally closer to the original than the covariance-projection methods (CovBat HC: 1.69, ALL: 1.75; RELIEF HC: 1.65, ALL: 1.72).}
+\caption{Cross-metric covariance structure preservation. \textbf{(a)} Pearson correlation matrices of the eight biomarkers (HC cohort, $N=188$) before and after each method. \textbf{(b)} Frobenius distance between the correlation matrices of each pair of methods (lower = more similar covariance structure). Expressed relative to the total Frobenius norm of the original correlation matrix ($\|R_{\mathrm{orig}}\|_F=4.08$ in HC, $4.07$ in ALL), all methods displaced the covariance structure by 37.4--41.3\% in HC (ComBat 37.4\%, LME/FE 38.3\%, ComBat-joint 38.5\%, RELIEF 40.3\%, CovBat 41.3\%; 39.8--43.0\% in ALL: ComBat 39.8\%, LME/FE 40.5\%, ComBat-joint 40.5\%, RELIEF 42.3\%, CovBat 43.0\%), so covariance preservation holds only in relative terms. CovBat and RELIEF are the closest to each other (HC: 0.09, ALL: 0.08), indicating near-identical covariance structure despite the additional ICA round-trip in RELIEF. ComBat-joint and ComBat are also close (HC: 0.11, ALL: 0.10), showing that joint empirical Bayes has limited impact on the covariance structure beyond the per-metric ComBat baseline. The location--scale methods (ComBat HC: 1.55, ALL: 1.64; LME/FE HC: 1.56, ALL: 1.65) remain marginally closer to the original than the covariance-projection methods (CovBat HC: 1.69, ALL: 1.75; RELIEF HC: 1.65, ALL: 1.72).}
 \end{figure}
 
 \textbf{Table S8.} Per-vendor one-vs-rest AUC (ALL cohort, $N=246$) after fold-internal harmonisation. Hanley--McNeil 95\% CI based on the point estimate; vendor labels are known to the harmonisation step (training and test) but the random forest is blind to them.
@@ -242,7 +242,6 @@ LME/FE        & 0.907 & [0.838, 0.977] & 0.722 & [0.634, 0.810] & 0.849 & [0.802
 
 The following data files are provided:
 \begin{itemize}[nosep]
-  \item \texttt{biomarkers\_master.csv}: Raw biomarker values with demographics (267 subjects)
   \item \texttt{demographics\_completecase.csv}: Complete-case analysis sample demographics by vendor and cohort (Supplementary Table~S1)
   \item \texttt{lovo\_summary.csv}: Leave-one-vendor-out validation results (18 rows)
   \item \texttt{lovo\_testvendor.csv}: Leave-one-vendor-out held-out (test) vendor shifts and correlations per fold, method, and biomarker (162 rows; Supplementary Table~S6)
@@ -253,8 +252,6 @@ The following data files are provided:
   \item \texttt{permanova\_results.csv}: PERMANOVA results (HC and ALL cohorts)
   \item \texttt{bootstrap\_r\_ci\_cc.csv} / \texttt{bootstrap\_eta2\_baseline\_cc.csv}: Bootstrap 95\% confidence intervals for $r_{\text{pre,post}}$ and baseline $\eta^2$ ($B=2{,}000$, stratified by vendor)
   \item \texttt{bootstrap\_paired\_r.csv}: Paired bootstrap tests of $r_{\text{pre,post}}$ differences between method pairs (20 rows; Supplementary Table~S7)
-  \item \texttt{lme\_effect\_summary.csv}: LME convergence status per biomarker$\times$cohort
-  \item \texttt{relief\_components\_HC.csv} / \texttt{relief\_components\_ALL.csv}: RELIEF ICA component statistics
   \item \texttt{ml\_leakfree\_summary.csv}: Fold-internal machine-learnability summary (vendor, pathology, and sex AUC by method and cohort)
   \item \texttt{ml\_leakfree\_vendorclass.csv}: Per-vendor one-vs-rest AUC after fold-internal harmonisation (Supplementary Table~S8)
   \item \texttt{ml\_leakfree\_paired.csv}: Paired comparison of pathology AUC (Original vs each method, within-resample)
