@@ -1,0 +1,1 @@
+Across 43 sites and three vendors, we benchmarked five harmonisation methods for spinal cord quantitative MRI. Vendor effects were substantial and method-specific; LME/FE left the most residual vendor signal for machine learning to discriminate, while ComBat-joint achieved the best balance of vendor removal and biological-signal preservation.
