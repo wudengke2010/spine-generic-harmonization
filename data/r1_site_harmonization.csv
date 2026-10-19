@@ -1,0 +1,8 @@
+fit,vendor_eta2_mean,site_eta2_mean,permanova_R2_vendor,age_R2,sex_R2,r_prepost
+Original,0.314685,0.540475,0.314685,0.00155,0.02981,1.0
+"ComBat (batch=vendor, eb=F)",0.000409,0.296487,0.000409,0.00886,0.03331,0.7895
+"ComBat (batch=site, eb=T)",0.011966,0.044561,0.011966,0.01088,0.04899,0.7032
+"ComBat (batch=model, eb=T)",0.002227,0.197225,0.002227,0.0078,0.03253,0.7634
+"ComBat-joint (batch=vendor, eb=T)",0.000491,0.297543,0.000491,0.00868,0.03343,0.8063
+"ComBat-joint (batch=site, eb=T)",0.011966,0.044561,0.011966,0.01088,0.04899,0.7032
+"ComBat-joint (batch=model, eb=T)",0.002227,0.197225,0.002227,0.0078,0.03253,0.7634

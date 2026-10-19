@@ -1,0 +1,13 @@
+analysis,value,auc_mean,auc_sd
+A1 age MWU (pathology vs HC),median 34.0 vs 28.0; p=2.02e-07,,
+A2 age alone,,0.7254218635363169,
+A2b sex alone,,0.5265040352164343,
+A2c age+sex linear score,,0.7249633162142333,
+"A3 Original, biomarkers residualised on age+sex",,0.565219185619956,0.026868529763809504
+"A3 ComBat, biomarkers residualised on age+sex",,0.654846845194424,0.021339956346944952
+A4 reference (no residualisation): Original,,0.52,0.0236
+A4 reference (no residualisation): ComBat,,0.6248,0.0179
+A4 reference (no residualisation): ComBat-joint,,0.6182,0.0149
+A4 reference (no residualisation): CovBat,,0.5823,0.031
+A4 reference (no residualisation): RELIEF,,0.5894,0.0258
+A4 reference (no residualisation): LME,,0.6088,0.0196

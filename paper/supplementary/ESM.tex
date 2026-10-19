@@ -55,7 +55,32 @@ Pathology (HC/MC/DCM) & 25/8/0 & 33/13/1 & 130/35/1 & 188/56/2 & 0.661 \\
 
 \subsection*{S2. Biomarker Extraction and Quality Control}
 
-All biomarkers were extracted using the Spinal Cord Toolbox (SCT v7.4; \url{https://spinalcordtoolbox.com}) following the spine-generic processing pipeline documentation (\url{https://spine-generic.readthedocs.io}).
+All biomarkers were extracted using the Spinal Cord Toolbox (\url{https://spinalcordtoolbox.com}) following the spine-generic processing pipeline documentation (\url{https://spine-generic.readthedocs.io}), with the differences listed in Table~S2a below. The installed build reports version \texttt{7.4.dev0}, which is not a numbered release; the exact source snapshot was the master branch at git commit \texttt{93923f5e363d9400fbadab07459f125a08b21ad8} (2 June 2026, sixteen commits after the 7.3 release of 8 May 2026). All segmentations, vertebral labels and metric maps were generated de novo for this study; the manual disc labels and segmentations shipped in the dataset's \texttt{derivatives/labels} directory were not used, so that every subject was processed by one uniform, fully automatic pipeline. Per-subject QC reports (segmentation and labelling overlays) were generated with \texttt{sct\_qc} for every subject and contrast and are available on request.
+
+\textbf{Table S2a.} Step-by-step comparison of the present pipeline with the spine-generic reference pipeline (\texttt{process\_data.sh}, \url{https://github.com/spine-generic/spine-generic}).
+
+\vspace{2mm}
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{p{3.2cm}p{5.6cm}p{5.6cm}}
+\toprule
+\textbf{Step} & \textbf{Reference pipeline (process\_data.sh)} & \textbf{Present pipeline} \\
+\midrule
+Software & SCT available at data release (2021--2023 era) & SCT \texttt{7.4.dev0}, master commit \texttt{93923f5e} (2026-06-02) \\
+Cord segmentation & \texttt{sct\_deepseg\_sc} (legacy per-contrast CNN); manual segmentations used where shipped & \texttt{sct\_deepseg spinalcord} (contrast-agnostic nnUNet), fully automatic for all subjects \\
+GM segmentation & \texttt{sct\_deepseg\_gm} (legacy) & \texttt{sct\_deepseg graymatter} (nnUNet, model release r20250420) \\
+Vertebral labelling & \texttt{sct\_label\_vertebrae} on T1w, using the shipped manual disc labels (\texttt{-discfile}) where available; PAM50 levels propagated via template registration & \texttt{sct\_label\_vertebrae} on T2w, fully automatic (no manual disc labels); T2w labels registered into the MT and DWI spaces (audit in S2.2) \\
+T2w cord CSA & C2--C3 (\texttt{-vert 2:3}; a C3--C4 variant also computed) & C2--C3 (\texttt{-vert 2:3}) --- unchanged \\
+GM-CSA (T2\textsuperscript{*}) & C3--C4 (\texttt{-vert 3:4}, angle correction off) & Mean over every segmented cervical slice (no level restriction; T2\textsuperscript{*} coverage shorter than the levels resolved on T2w) \\
+MTR / MTsat & White-matter PAM50 atlas, C2--C5 (\texttt{-vert 2:5}) & Whole-cord mask, C2--C3 (\texttt{-vert 2:3 -method wa}) \\
+DTI metrics & FA, MD, RD in the white-matter atlas, C2--C5; AD not extracted & FA, MD, AD, RD in the whole-cord mask, C2--C3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The common C2--C3 window was chosen so that the seven level-restricted biomarkers sample identical anatomy; the benchmark conclusions concern method rankings on the same data rather than absolute biomarker values, and the window applies identically to all methods and both cohorts.
 
 \textbf{Processing steps:}
 \begin{itemize}[nosep]
@@ -104,8 +129,9 @@ where $u_v \sim \mathcal{N}(0, \sigma_u^2)$ is the vendor-specific random interc
 
 \textbf{S4.3 Biological $R^2$.} Type-II semi-partial $R^2$ from linear models: $\text{biomarker} \sim \text{Age} + \text{Sex}$. Reported as mean across biomarkers.
 
-\textbf{S4.4 Subject-level preservation.} Pearson correlation between pre- and post-harmonization 8-dimensional biomarker vectors, computed per subject and averaged:
-\[ r = \text{mean}_i[\text{corr}(y_i^{\text{pre}}, y_i^{\text{post}})]. \]
+\textbf{S4.4 Subject-level preservation.} For each biomarker, the Pearson correlation across subjects between the pre- and post-harmonization values---i.e., preservation of the subject ranking on that biomarker---averaged over the eight biomarkers:
+\[ r = \text{mean}_{b}\big[\text{corr}_{i}\big(y_{ib}^{\text{pre}}, y_{ib}^{\text{post}}\big)\big], \]
+where $b$ indexes biomarkers and $i$ subjects. This definition is consistent with the $\sqrt{1-\eta^2}$ ceiling argument in S6.
 
 \textbf{S4.5 Unified complete-case analysis sample.} All results in the main text and this supplement are computed on a single pre-specified complete-case sample per cohort: HC $N=188$ and ALL $N=246$ (all eight biomarkers plus age, sex, and vendor observed). ComBat and LME/FE were refitted on this unified sample (the ComBat and LME/FE columns of every table therefore derive from these refits); ComBat-joint, CovBat, and RELIEF are complete-case by construction because they require the full joint biomarker panel. This unified definition replaces the earlier per-metric maximum-available-sample evaluation and removes any sample mismatch between univariate and multivariate endpoints.
 
@@ -199,7 +225,7 @@ where $u_v \sim \mathcal{N}(0, \sigma_u^2)$ is the vendor-specific random interc
 
 \subsection*{S6. Design C Subsample Analyses (Reduced Imbalance and Equal-n)}
 
-To isolate the effect of vendor imbalance, two subsample designs were analysed in the HC cohort (20 random seeds each, all five methods refitted per subset using the same canonical implementations as the main analysis; subject-level preservation is reported as the pooled $r_{\text{pre,post}}$, the same metric as Table~2 of the main text). The reduced-imbalance design restricted Siemens to 40 randomly drawn subjects per seed while retaining all GE and Philips subjects (GE 25, Philips 33, Siemens 40; $n\approx98$ per subset; residual imbalance $\max/\min=1.60$ vs.\ $5.2$ in the full analysis). The true-equal-$n$ sensitivity design drew 25 subjects per vendor ($n=75$; imbalance ratio $=1.00$). Vendor $\eta^2$, PERMANOVA $R^2$, pooled and within-vendor subject-level preservation, and age-signal recovery were recomputed per seed.
+To isolate the effect of vendor imbalance, two subsample designs were analysed in the HC cohort (20 random seeds each, all five methods refitted per subset using the same canonical implementations as the main analysis; subject-level preservation is reported as the pooled $r_{\text{pre,post}}$, the same metric as Table~3 of the main text). The reduced-imbalance design restricted Siemens to 40 randomly drawn subjects per seed while retaining all GE and Philips subjects (GE 25, Philips 33, Siemens 40; $n\approx98$ per subset; residual imbalance $\max/\min=1.60$ vs.\ $5.2$ in the full analysis). The true-equal-$n$ sensitivity design drew 25 subjects per vendor ($n=75$; imbalance ratio $=1.00$). Vendor $\eta^2$, PERMANOVA $R^2$, pooled and within-vendor subject-level preservation, and age-signal recovery were recomputed per seed.
 
 In the reduced-imbalance design the pooled-$r$ preservation hierarchy was retained (LME/FE $r=0.779\pm0.011$, ComBat-joint $0.773\pm0.014$, RELIEF $0.760\pm0.015$, CovBat $0.749\pm0.016$, ComBat $0.745\pm0.015$; the only rank change vs.\ the full analysis was the adjacent exchange of ComBat and CovBat, a pair not significantly separated in the main analysis), and the true-equal-$n$ design gave concordant results (LME/FE $0.772\pm0.015$, ComBat-joint $0.768\pm0.016$, RELIEF $0.754\pm0.014$, CovBat $0.743\pm0.017$, ComBat $0.732\pm0.017$). Absolute values were lower than in the full cohort ($0.782$--$0.816$) because the subsamples carried a higher baseline vendor-variance fraction: the measured unharmonised $\eta^2$ was $0.374$ (range $0.343$--$0.401$ across seeds) in the reduced-imbalance design and $0.389$ (range $0.337$--$0.431$) in the true-equal-$n$ design, versus $0.315$ in the full analysis. Because pooled $r$ after a location--scale correction cannot exceed $\sqrt{1-\eta^2}$, these baselines imply ceilings of approximately $0.79$ and $0.78$; every per-method mean fell below its design's ceiling, and in a per-seed check the LME/FE pooled $r$ never exceeded the per-seed ceiling $\sqrt{1-\eta^2}$ in any of the 20 seeds of either design (smallest margins $0.007$ and $0.004$). Within-vendor subject rankings were nonetheless preserved near-perfectly by every method in both designs (mean within-vendor $r\geq0.97$), indicating that the pooled-$r$ gradient reflects differential removal of between-vendor variance rather than degradation of within-vendor subject rankings. Results are shown in Supplementary Fig.~S2.
 
@@ -214,7 +240,7 @@ In the reduced-imbalance design the pooled-$r$ preservation hierarchy was retain
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{FigS2_designC.pdf}
-\caption{Design C subsample analyses: reduced-imbalance and true-equal-n designs (HC cohort, 20 random seeds each; all methods refitted per subset). \textbf{(a)} Pooled subject-level preservation ($r_{\text{pre,post}}$, the main-text Table~2 metric): reduced-imbalance subsample (Siemens restricted to 40 subjects per seed, all GE and Philips subjects retained; $n\approx98$ per subset; imbalance ratio $1.60$) and true-equal-$n$ subsample (25 subjects per vendor, $n=75$, ratio $1.00$); dashed lines mark the full-cohort reference values. \textbf{(b)} Within-vendor subject-ranking preservation (Pearson $r$ computed within each vendor group; equal to 1 for pure location-shift methods by construction). \textbf{(c)} Vendor effect size ($\eta^2$) on logarithmic scale; the dashed line marks the unharmonised subsample baseline (mean $\eta^2\approx0.37$--$0.39$). The pooled-$r$ preservation hierarchy was retained in both designs (reduced imbalance: LME/FE $0.779\pm0.011$, ComBat-joint $0.773\pm0.014$, RELIEF $0.760\pm0.015$, CovBat $0.749\pm0.016$, ComBat $0.745\pm0.015$; equal-$n$: LME/FE $0.772\pm0.015$, ComBat-family $0.732$--$0.768$), with absolute values below the full cohort ($0.782$--$0.816$) because the subsamples carry a higher baseline vendor-variance fraction; within-vendor rankings were preserved near-perfectly by every method (mean $r\geq0.97$).}
+\caption{Design C subsample analyses: reduced-imbalance and true-equal-n designs (HC cohort, 20 random seeds each; all methods refitted per subset). \textbf{(a)} Pooled subject-level preservation ($r_{\text{pre,post}}$, the main-text Table~3 metric): reduced-imbalance subsample (Siemens restricted to 40 subjects per seed, all GE and Philips subjects retained; $n\approx98$ per subset; imbalance ratio $1.60$) and true-equal-$n$ subsample (25 subjects per vendor, $n=75$, ratio $1.00$); dashed lines mark the full-cohort reference values. \textbf{(b)} Within-vendor subject-ranking preservation (Pearson $r$ computed within each vendor group; equal to 1 for pure location-shift methods by construction). \textbf{(c)} Vendor effect size ($\eta^2$) on logarithmic scale; the dashed line marks the unharmonised subsample baseline (mean $\eta^2\approx0.37$--$0.39$). The pooled-$r$ preservation hierarchy was retained in both designs (reduced imbalance: LME/FE $0.779\pm0.011$, ComBat-joint $0.773\pm0.014$, RELIEF $0.760\pm0.015$, CovBat $0.749\pm0.016$, ComBat $0.745\pm0.015$; equal-$n$: LME/FE $0.772\pm0.015$, ComBat-family $0.732$--$0.768$), with absolute values below the full cohort ($0.782$--$0.816$) because the subsamples carry a higher baseline vendor-variance fraction; within-vendor rankings were preserved near-perfectly by every method (mean $r\geq0.97$).}
 \end{figure}
 
 \begin{figure}[H]
@@ -268,8 +294,58 @@ The following data files are provided:
   \item \texttt{ml\_leakfree\_vendorclass.csv}: Per-vendor one-vs-rest AUC after fold-internal harmonisation (Supplementary Table~S8)
   \item \texttt{ml\_leakfree\_paired.csv}: Paired comparison of pathology AUC (Original vs each method, within-resample)
   \item \texttt{lovo\_permanova\_z.csv}: Z-scored PERMANOVA results for the LOVO pooled evaluation sample
+  \item \texttt{r1\_age\_confound.csv}: Age-confounding sensitivity analysis of the pathology-label classification (Supplementary Material~S9)
+  \item \texttt{r1\_site\_harmonization.csv}: ComBat with site and scanner-model batch variables (Supplementary Material~S10)
 \end{itemize}
 
 The analysis code is available at \url{https://github.com/wudengke2010/spine-generic-harmonization}.
+
+\subsection*{S9. Age Confounding of the Radiological Pathology Labels}
+
+The pathology labels are radiological assessments of mostly mild cervical compression [3], and mild compression is age-related. We therefore quantified how far the exploratory pathology classification (main text, Section~3.3) is explained by age.
+
+In the ALL complete-case cohort ($N=246$; 58 label-positive, 188 controls), labelled subjects were older (median 34.0 vs.\ 28.0 years; Mann--Whitney $p=2.0\times10^{-7}$). Age alone discriminated the labels with AUC $=0.725$, and a linear age+sex score gave AUC $=0.725$ (sex alone: $0.53$)---above every biomarker-based classifier in the main analysis. To test whether the post-harmonisation improvement in biomarker-based classification merely reflects this age confounding, we residualised each of the eight biomarkers on age and sex (OLS) and repeated the identical leakage-free classification protocol (random forest, 5-fold $\times$ 20 repeats, harmonisation refit within each fold):
+
+\textbf{Table S9.} Pathology-label classification before and after residualising the biomarkers on age and sex (leakage-free protocol identical to the main analysis; mean $\pm$ SD AUC over 20 repeats).
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{lcc}
+\toprule
+\textbf{Features} & \textbf{Original} & \textbf{ComBat} \\
+\midrule
+All eight biomarkers (main analysis) & $0.520\pm0.024$ & $0.625\pm0.018$ \\
+Biomarkers residualised on age and sex & $0.565\pm0.027$ & $0.655\pm0.021$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The harmonisation-related improvement persists, and in fact slightly increases, after removal of age and sex effects, so it is not explained by the age difference between groups. Nonetheless, because the labels are radiological rather than clinical, are age-related, were not assigned at the extracted vertebral level, and come from a single dataset, we report this endpoint as exploratory and draw no disease-related conclusion from it.
+
+\subsection*{S10. Site- and Scanner-Model-Level Harmonisation}
+
+Because only three vendor levels are available, per-metric ComBat was refitted on the HC complete-case sample ($N=188$) with site (40 levels) or scanner model (12 levels) as the batch variable, using implementations identical to the main analysis. Empirical Bayes shrinkage across batches was enabled for the site- and model-level fits because per-batch samples are small (2--8 subjects per site); for reference, the vendor-batch fit is shown with empirical Bayes both disabled (the canonical per-metric ComBat of the main analysis) and enabled (equivalent to the main-analysis ComBat-joint up to per-feature affine maps). Results:
+
+\textbf{Table S10.} ComBat with alternative batch variables (HC complete-case, $N=188$; vendor $\eta^2$ and site $\eta^2$ are means over the eight biomarkers; $r_{\text{pre,post}}$ is the main-text Table~3 metric).
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llccccc}
+\toprule
+\textbf{Batch variable} & \textbf{EB} & \textbf{Vendor $\eta^2$} & \textbf{Site $\eta^2$} & \textbf{Age $R^2$} & \textbf{Sex $R^2$} & \textbf{$r_{\text{pre,post}}$} \\
+\midrule
+None (Original) & --- & 0.3147 & 0.5405 & 0.0015 & 0.0298 & 1.000 \\
+Vendor (3 levels; main-analysis ComBat) & off & 0.0004 & 0.2965 & 0.0089 & 0.0333 & 0.789 \\
+Vendor (3 levels; ${\equiv}$ main-analysis ComBat-joint) & on & 0.0005 & 0.2975 & 0.0087 & 0.0334 & 0.806 \\
+Scanner model (12 levels) & on & 0.0022 & 0.1972 & 0.0078 & 0.0325 & 0.763 \\
+Site (40 levels) & on & 0.0120 & 0.0446 & 0.0109 & 0.0490 & 0.703 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Because sites are perfectly nested within vendors, site-level harmonisation also removes vendor effects, down to the chance level ($\eta^2=0.012$ vs.\ the null expectation $(k-1)/(N-1)\approx0.011$), and it removes most of the site-level variance ($0.54\rightarrow0.045$). Scanner-model harmonisation is intermediate. Finer-grained batches recover marginally more age- and sex-related variance but distort subject rankings more (lower $r_{\text{pre,post}}$), and---unlike the vendor-batch fit evaluated in the LOVO framework---a site- or model-level fit offers no route to unseen vendors or unseen sites.
 
 \end{document}
