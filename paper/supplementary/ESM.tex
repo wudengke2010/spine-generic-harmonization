@@ -85,8 +85,8 @@ The common C2--C3 window was chosen so that the seven level-restricted biomarker
 \textbf{Processing steps:}
 \begin{itemize}[nosep]
   \item \textbf{Vertebral labelling:} \texttt{sct\_label\_vertebrae} on the T2w image. This command registers the PAM50 template to the native space and propagates disc labels; each axial slice was then assigned to the vertebral level spanning it, and slices at levels 2 and 3 formed the C2--C3 window.
-  \item \textbf{T2w-CSA:} \texttt{sct\_deepseg spinalcord} on the T2w image, followed by \texttt{sct\_process\_segmentation} with \texttt{-vert 2:3}.
-  \item \textbf{MTR/MTsat:} Computed from MT-on and MT-off acquisitions (\texttt{sct\_compute\_mtr}, \texttt{sct\_compute\_mtsat}) and averaged over the C2--C3 window with \texttt{sct\_extract\_metric -vert 2:3 -method wa}, after registration of the T2w vertebral labels into the MT space.
+  \item \textbf{T2w-CSA:} \texttt{sct\_deepseg spinalcord} on the T2w image, then cord-metrics extraction with \texttt{sct\_process\_segmentation} over the C2--C3 window (\texttt{-vert 2:3}).
+  \item \textbf{MTR/MTsat:} Computed from MT-on and MT-off acquisitions (\texttt{sct\_compute\_mtr}, \texttt{sct\_compute\_mtsat}) and averaged over the C2--C3 window with \texttt{sct\_extract\_metric} (\texttt{-vert 2:3}, weighted average \texttt{-method wa}), after registration of the T2w vertebral labels into the MT space.
   \item \textbf{DTI metrics:} \texttt{sct\_dmri\_moco} and \texttt{sct\_dmri\_compute\_dti}, then averaged over the C2--C3 window with \texttt{sct\_extract\_metric -vert 2:3 -method wa} after the same registration into the diffusion space.
   \item \textbf{GM-CSA:} \texttt{sct\_deepseg graymatter} (nnUNet model, release r20250420) on the T2\textsuperscript{*}-weighted image. T2\textsuperscript{*}-derived cord, grey-matter and white-matter CSA were averaged over every segmented slice and were not restricted to C2--C3, because the T2\textsuperscript{*} acquisition covers a shorter craniocaudal range than the vertebral levels resolved on T2w.
 \end{itemize}
@@ -97,11 +97,11 @@ The common C2--C3 window was chosen so that the seven level-restricted biomarker
 
 For these 15 subjects the C2--C3 window was relocated interactively: the most cranial tip of the imaged cord was placed by hand, and the whole C2--C3 window was then translated rigidly, with its width fixed at that subject's own C2 and C3 height (28--34 mm). All seven level-restricted biomarkers were re-extracted (GM-CSA is unaffected, being averaged over the whole segmented cord). Of the 105 resulting values, 81 could be re-extracted. T2w-CSA was recovered for all 15 subjects. For three subjects (fslAchieva01, pavia05, tehranS06) the relocated C2--C3 level lay outside the field of view of both the MT and the diffusion acquisitions, so no voxels could be extracted at all; these three were already missing six biomarkers each in the primary analysis, so the complete-case sample sizes are unaffected. For one further subject (oxfordFmrib03) only two diffusion slices (10 mm) fell inside the field of view, below a three-slice minimum, so its six MT and diffusion metrics were not replaced. Changes in T2w-CSA ranged from $-13.1$ to $+26.2$ mm\textsuperscript{2}, and translating the window by $\pm8$ slices moved T2w-CSA by 1.1--6.8 mm\textsuperscript{2}, so the relocated values are not sensitive to the precision of the manual placement.
 
-\textbf{Sensitivity of the reported findings.} Replacing the 81 re-extracted values in the complete-case cohorts changed the baseline vendor $\eta^2$ (mean over eight biomarkers) from 0.3147 to 0.3090 in HC ($N=188$) and from 0.3360 to 0.3309 in ALL ($N=246$); PERMANOVA remained $p=0.001$ in both cohorts. An independent check supports the relocation: the ratio of T2w-CSA to the T2\textsuperscript{*}-derived cord CSA, which is unaffected by the mislabelling because it is not level-restricted, lay outside the cohort 1st--99th percentile range (0.841--1.031) for 5 of the 15 subjects in the primary analysis and for none of them after relocation.
+\textbf{Sensitivity of the reported findings.} Replacing the 81 re-extracted values in the complete-case cohorts changed the baseline vendor $\eta^2$ (mean over eight biomarkers) from 0.3147 to 0.3090 in HC ($N=188$) and from 0.3360 to 0.3309 in ALL ($N=246$); PERMANOVA remained at the permutation floor ($p=0.001$ with 999 permutations) in both cohorts. An independent check supports the relocation: the ratio of T2w-CSA to the T2\textsuperscript{*}-derived cord CSA, which is unaffected by the mislabelling because it is not level-restricted, lay outside the cohort 1st--99th percentile range (0.841--1.031) for 5 of the 15 subjects in the primary analysis and for none of them after relocation.
 
 The primary analysis reported in the main text retains the values produced by the automated pipeline. The relocated values are reported here as a sensitivity analysis rather than adopted as primary, for three reasons: the interactive placement is not an anatomical gold standard; the defect is irrecoverable in the three subjects whose relocated C2--C3 level falls outside the MT and diffusion field of view; and the effect on the reported statistics is small.
 
-\subsection*{S3. Harmonization Methods: Mathematical Details}
+\subsection*{S3. Harmonisation Methods: Mathematical Details}
 
 \textbf{S3.1 ComBat (per-metric).} For each biomarker $y_{ijv}$ for subject $i$ at site $v$:
 \begin{equation*}
@@ -109,17 +109,17 @@ y_{ijv}^{\text{harm}} = \frac{y_{ijv} - \hat{\alpha}_v - X_{ij}\hat{\beta}}{\hat
 \end{equation*}
 where $\hat{\alpha}_v$ and $\hat{\gamma}_v$ are vendor-specific location and scale parameters estimated with empirical Bayes shrinkage, and $X_{ij}$ is the design matrix of biological covariates (age, sex). This is the standard ComBat formulation [8,9] applied independently to each biomarker.
 
-\textbf{S3.2 ComBat-joint.} All eight biomarkers are modeled jointly with a shared vendor parameter estimated via joint empirical Bayes (\texttt{eb=True} in neuroCombat). The mathematical form is identical to S3.1 but $\hat{\alpha}_v$ and $\hat{\gamma}_v$ are estimated simultaneously across biomarkers, preserving cross-metric covariance structure.
+\textbf{S3.2 ComBat-joint.} All eight biomarkers are modelled jointly with a shared vendor parameter estimated via joint empirical Bayes (\texttt{eb=True} in neuroCombat). The mathematical form is identical to S3.1 but $\hat{\alpha}_v$ and $\hat{\gamma}_v$ are estimated simultaneously across biomarkers, preserving cross-metric covariance structure.
 
-\textbf{S3.3 CovBat.} After ComBat-joint harmonization, the residual matrix $E$ (subjects $\times$ biomarkers) is decomposed via PCA: $E = ZW^T$, where $Z$ is the PC score matrix and $W$ is the loading matrix. PCs explaining at least 95\% of the residual variance were retained ($K=5$ of 8 in both cohorts; see Supplementary Fig.~S4 for the resulting covariance structure). Each PC $k$ is then harmonized independently: $Z_{k}^{\text{harm}} = (Z_k - \hat{\alpha}_{vk})/\hat{\gamma}_{vk}$, where $\hat{\alpha}_{vk}$ and $\hat{\gamma}_{vk}$ are vendor-specific parameters for PC $k$. The harmonized data are reconstructed as $Y^{\text{harm}} = Y^{\text{ComBat-joint}} + Z^{\text{harm}}W^T$.
+\textbf{S3.3 CovBat.} After ComBat-joint harmonisation, the residual matrix $E$ (subjects $\times$ biomarkers) is decomposed via PCA: $E = ZW^T$, where $Z$ is the PC score matrix and $W$ is the loading matrix. PCs explaining at least 95\% of the residual variance were retained ($K=5$ of 8 in both cohorts; see Supplementary Fig.~S4 for the resulting covariance structure). Each PC $k$ is then harmonised independently: $Z_{k}^{\text{harm}} = (Z_k - \hat{\alpha}_{vk})/\hat{\gamma}_{vk}$, where $\hat{\alpha}_{vk}$ and $\hat{\gamma}_{vk}$ are vendor-specific parameters for PC $k$. The harmonised data are reconstructed as $Y^{\text{harm}} = Y^{\text{ComBat-joint}} + Z^{\text{harm}}W^T$.
 
-\textbf{S3.4 RELIEF.} After ComBat-joint harmonization, residuals undergo ICA decomposition: $E = SA^T$, where $S$ is the independent component score matrix and $A$ is the mixing matrix. For each component $c$, a one-way ANOVA tests vendor association. Components with Benjamini-Hochberg FDR-controlled $q < 0.05$ are zeroed ($S_c \leftarrow 0$). The remaining components are recombined: $E^{\text{RELIEF}} = S^{\text{cleaned}}A^T$.
+\textbf{S3.4 RELIEF.} After ComBat-joint harmonisation, residuals undergo ICA decomposition: $E = SA^T$, where $S$ is the independent component score matrix and $A$ is the mixing matrix. For each component $c$, a one-way ANOVA tests vendor association. Components with Benjamini-Hochberg FDR-controlled $q < 0.05$ are zeroed ($S_c \leftarrow 0$). The remaining components are recombined: $E^{\text{RELIEF}} = S^{\text{cleaned}}A^T$.
 
 \textbf{S3.5 LME/FE.} For each biomarker:
 \begin{equation*}
 y_{ijv} = \beta_0 + \beta_1 \text{Age}_i + \beta_2 \text{Sex}_i + u_v + \varepsilon_{ijv}
 \end{equation*}
-where $u_v \sim \mathcal{N}(0, \sigma_u^2)$ is the vendor-specific random intercept. Harmonized values: $y_{ijv}^{\text{harm}} = y_{ijv} - \hat{u}_v$ when LME converges; $y_{ijv}^{\text{harm}} = y_{ijv} - \bar{y}_v + \bar{y}$ (OLS centering) when the random-effects covariance matrix is singular (FE fallback).
+where $u_v \sim \mathcal{N}(0, \sigma_u^2)$ is the vendor-specific random intercept. Harmonised values: $y_{ijv}^{\text{harm}} = y_{ijv} - \hat{u}_v$ when LME converges; $y_{ijv}^{\text{harm}} = y_{ijv} - \bar{y}_v + \bar{y}$ (OLS centring) when the random-effects covariance matrix is singular (FE fallback).
 
 \subsection*{S4. Evaluation Metrics: Computational Details}
 
@@ -129,7 +129,7 @@ where $u_v \sim \mathcal{N}(0, \sigma_u^2)$ is the vendor-specific random interc
 
 \textbf{S4.3 Biological $R^2$.} Type-II semi-partial $R^2$ from linear models: $\text{biomarker} \sim \text{Age} + \text{Sex}$. Reported as mean across biomarkers.
 
-\textbf{S4.4 Subject-level preservation.} For each biomarker, the Pearson correlation across subjects between the pre- and post-harmonization values---i.e., preservation of the subject ranking on that biomarker---averaged over the eight biomarkers:
+\textbf{S4.4 Subject-level preservation.} For each biomarker, the Pearson correlation across subjects between the pre- and post-harmonisation values---i.e., preservation of the subject ranking on that biomarker---averaged over the eight biomarkers:
 \[ r = \text{mean}_{b}\big[\text{corr}_{i}\big(y_{ib}^{\text{pre}}, y_{ib}^{\text{post}}\big)\big], \]
 where $b$ indexes biomarkers and $i$ subjects. This definition is consistent with the $\sqrt{1-\eta^2}$ ceiling argument in S6.
 
@@ -175,11 +175,11 @@ where $b$ indexes biomarkers and $i$ subjects. This definition is consistent wit
 
 \subsection*{S5. LOVO External Validation: Protocol}
 
-\textbf{Training.} For each method, harmonization models were fitted on subjects from two vendors (training set). The third vendor was entirely held out as test set.
+\textbf{Training.} For each method, harmonisation models were fitted on subjects from two vendors (training set). The third vendor was entirely held out as test set.
 
 \textbf{Transformation of unseen vendors:}
 \begin{itemize}[nosep]
-  \item \textbf{ComBat/ComBat-joint:} Test-vendor biomarker values were z-scored to the training-vendor harmonized distribution: $y_{\text{test}}^{\text{harm}} = (y_{\text{test}} - \mu_{\text{test}}) \times (\sigma_{\text{train}}^{\text{harm}} / \sigma_{\text{test}}) + \mu_{\text{train}}^{\text{harm}}$.
+  \item \textbf{ComBat/ComBat-joint:} Test-vendor biomarker values were z-scored to the training-vendor harmonised distribution: $y_{\text{test}}^{\text{harm}} = (y_{\text{test}} - \mu_{\text{test}}) \times (\sigma_{\text{train}}^{\text{harm}} / \sigma_{\text{test}}) + \mu_{\text{train}}^{\text{harm}}$.
   \item \textbf{CovBat:} Test-vendor residuals were projected onto training PCA space; PC scores were z-score matched to training PC-score distribution.
   \item \textbf{RELIEF:} Test-vendor residuals were projected onto training ICA space via $\text{inv}(A^T)$; batch-flagged components were zeroed using the training-vendor flag set.
   \item \textbf{LME/FE:} Test-vendor offset set to 0; test-vendor values were carried through essentially untransformed (raw values, no vendor or covariate adjustment).
@@ -234,7 +234,7 @@ In the reduced-imbalance design the pooled-$r$ preservation hierarchy was retain
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{FigS1_rpre_post.pdf}
-\caption{Subject-level preservation ($r_{\text{pre,post}}$) by method. Marginal distributions of per-subject Pearson correlations between pre- and post-harmonization 8-dimensional biomarker vectors. Higher values indicate better preservation of subject ranking. LME/FE shows highest preservation ($r=0.82$); CovBat lowest ($r=0.78$).}
+\caption{Subject-level preservation ($r_{\text{pre,post}}$) by biomarker and method. Each cell shows, for one biomarker, the Pearson correlation across subjects between pre- and post-harmonisation values; the right margin gives the per-method mean across the eight biomarkers (the main-text Table~3 metric) with its rank, and the bottom strip the baseline vendor $\eta^2$. Higher values indicate better preservation of subject ranking. LME/FE shows the highest mean preservation ($r=0.82$); CovBat the lowest ($r=0.78$).}
 \end{figure}
 
 \begin{figure}[H]
@@ -332,7 +332,7 @@ Because only three vendor levels are available, per-metric ComBat was refitted o
 \begin{table}[H]
 \centering
 \footnotesize
-\setlength{\tabcolsep}{4pt}
+\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{llccccc}
 \toprule
 \textbf{Batch variable} & \textbf{EB} & \textbf{Vendor $\eta^2$} & \textbf{Site $\eta^2$} & \textbf{Age $R^2$} & \textbf{Sex $R^2$} & \textbf{$r_{\text{pre,post}}$} \\
@@ -346,6 +346,6 @@ Site (40 levels) & on & 0.0120 & 0.0446 & 0.0109 & 0.0490 & 0.703 \\
 \end{tabular}
 \end{table}
 
-Because sites are perfectly nested within vendors, site-level harmonisation also removes vendor effects, down to the chance level ($\eta^2=0.012$ vs.\ the null expectation $(k-1)/(N-1)\approx0.011$), and it removes most of the site-level variance ($0.54\rightarrow0.045$). Scanner-model harmonisation is intermediate. Finer-grained batches recover marginally more age- and sex-related variance but distort subject rankings more (lower $r_{\text{pre,post}}$), and---unlike the vendor-batch fit evaluated in the LOVO framework---a site- or model-level fit offers no route to unseen vendors or unseen sites.
+Because sites are perfectly nested within vendors, site-level harmonisation also removes vendor effects, down to the chance level ($\eta^2=0.012$ vs.\ the null expectation $(k-1)/(N-1)\approx0.011$), and it removes most of the site-level variance ($0.54\rightarrow0.045$). Scanner-model harmonisation is intermediate. Site-level harmonisation recovered marginally more age- and sex-related variance than the vendor-batch fit, whereas scanner-model harmonisation was intermediate in vendor-effect removal and subject-level preservation; both finer-grained fits distorted subject rankings more than the vendor-batch fit (lower $r_{\text{pre,post}}$), and---unlike the vendor-batch fit evaluated in the LOVO framework---a site- or model-level fit offers no route to unseen vendors or unseen sites.
 
 \end{document}
