@@ -442,8 +442,16 @@ def gen_fig3(comp, perm):
 # Fig4: Trade-off scatter
 # ============================================================
 def gen_fig4(comp, perm):
-    """Pareto frontier: x = -log10(PERMANOVA R2), y = r_pre,post."""
-    print("[Fig4] Trade-off scatter (Pareto frontier)")
+    """Trade-off: x = -log10(PERMANOVA R2), y = r_pre,post.
+
+    A Pareto (non-dominated) envelope is drawn only where it exists.  A method
+    is non-dominated if no other method achieves at least as much vendor-effect
+    removal (larger -log10 R2) and at least as much subject-level preservation
+    (larger r).  In the ALL cohort the decontamination axis spans only
+    2.3-3.0e-4 and all four ComBat-family methods are dominated by LME/FE, so
+    no envelope is drawn and the panel is read as a trade-off plot.
+    """
+    print("[Fig4] Trade-off scatter")
     fig, axes = plt.subplots(1, 2, figsize=(12, 5.5))
 
     cohorts = ["HC", "ALL"]
@@ -477,10 +485,21 @@ def gen_fig4(comp, perm):
         ax.scatter(xs, ys, s=sizes, c=colors_list, edgecolors="black",
                    linewidths=0.6, zorder=3, alpha=0.85)
 
-        # Pareto frontier line
-        order = sorted(range(len(xs)), key=lambda i: xs[i])
-        ax.plot([xs[i] for i in order], [ys[i] for i in order],
-                linestyle="--", color="#aaa", linewidth=1.0, zorder=2)
+        # Non-dominated (Pareto) envelope.  A point is dominated if another
+        # point is at least as good on BOTH axes and strictly better on one.
+        tol = 1e-9
+        front = []
+        for i in range(len(xs)):
+            dominated = any(
+                (xs[j] >= xs[i] - tol and ys[j] >= ys[i] - tol) and
+                (xs[j] > xs[i] + tol or ys[j] > ys[i] + tol)
+                for j in range(len(xs)) if j != i)
+            if not dominated:
+                front.append(i)
+        front.sort(key=lambda i: xs[i])
+        if len(front) >= 2:
+            ax.plot([xs[i] for i in front], [ys[i] for i in front],
+                    linestyle="--", color="#aaa", linewidth=1.0, zorder=2)
 
         # Method identification is provided by the single figure-level legend
         # below the panels (leader-line labels removed: they duplicated the
@@ -493,8 +512,14 @@ def gen_fig4(comp, perm):
         ax.set_ylim(min(ys) - y_pad, max(ys) + y_pad)
         x_pad = (max(xs) - min(xs)) * 0.20
         ax.set_xlim(min(xs) - x_pad, max(xs) + x_pad)
-        ax.text(0.97, 0.03, "Pareto frontier", transform=ax.transAxes,
-                fontsize=8, color="#999", ha="right", style="italic")
+        if len(front) >= 2:
+            ax.text(0.97, 0.03, f"Pareto envelope ({len(front)}/{len(xs)} non-dominated)",
+                    transform=ax.transAxes, fontsize=7.5, color="#999",
+                    ha="right", style="italic")
+        else:
+            ax.text(0.97, 0.03, "no envelope:\nsingle non-dominated method",
+                    transform=ax.transAxes, fontsize=7.5, color="#999",
+                    ha="right", va="bottom", style="italic")
         # Note the compressed x-range in panel b (ALL): the five methods are
         # much closer on this axis than in panel a (HC).
         if idx == 1:

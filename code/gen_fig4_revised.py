@@ -12,12 +12,15 @@ METHOD_LABEL = {"Original":"Original","ComBat":"ComBat","ComBat-joint":"ComBat-j
 FOLDS = ["GE","Philips","Siemens"]
 COLORS = {"GE":"#0072B2","Philips":"#E69F00","Siemens":"#009E73"}
 
-# legacy approximate LOVO age R2 values (unchanged by z-scoring)
-AGE_LOVO = {"Original":0.0015,"ComBat":0.0089,"ComBat-joint":0.0088,"CovBat":0.0094,"RELIEF":0.0040,"LME":0.0042}
-# test-vendor r pre/post: fold means computed from lovo_summary.csv
-# CovBat {0.8514, 0.9490, 0.9108} -> 0.904 ; RELIEF {0.9249, 0.9725, 0.9603} -> 0.953
-# affine methods are 1.0 by construction
-R_LOVO = {"Original":1.0,"ComBat":1.0,"ComBat-joint":1.0,"CovBat":0.904,"RELIEF":0.953,"LME":1.0}
+# v1.7.3: panel C and D are read from the LOVO run itself instead of being
+# hard-coded, so the figure cannot drift away from lovo_results_long.csv.
+_LONG = pd.read_csv("E:/boshi/qm_harmonization_paper/results/step5_lovo/lovo_results_long.csv")
+_SUM  = pd.read_csv("E:/boshi/qm_harmonization_paper/results/step5_lovo/lovo_summary.csv")
+AGE_LOVO = _LONG.groupby("method")["age_R2"].mean().to_dict()
+# test-vendor pre/post correlation: affine methods equal 1.0 by construction,
+# CovBat and RELIEF are the measured projection distortions
+R_LOVO = _SUM.groupby("method")["r_pre_post_test_mean"].mean().to_dict()
+R_LOVO["Original"] = 1.0
 
 fig = plt.figure(figsize=(12,10))
 gs = GridSpec(2,2, figure=fig, hspace=0.32, wspace=0.28)

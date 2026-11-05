@@ -57,6 +57,12 @@ N_PERM     = 4999   # PERMANOVA permutations (reduced for speed)
 MASTER_CSV = Path("E:/boshi/qm_harmonization_paper/results/biomarkers_master.csv")
 OUT_DIR    = Path("E:/boshi/qm_harmonization_paper/results/step5_lovo")
 
+# v1.7.3: apply test-vendor distribution matching in RELIEF's held-out path,
+# as already done for ComBat (per biomarker) and CovBat (per PC).  Set to False
+# only to reproduce the earlier, internally inconsistent result.
+RELIEF_TEST_MATCHING = True
+
+
 
 # ── Evaluation helpers (copied from step4_eval for consistency) ──────────────
 def vendor_stats(y: pd.Series, batch: pd.Series) -> dict:
@@ -429,6 +435,23 @@ def relief_train_transform(train_df: pd.DataFrame, test_df: pd.DataFrame):
     S_te_clean = S_te.copy()
     S_te_clean[:, flag] = 0.0
 
+    # v1.7.3: test-vendor distribution matching, identical in spirit to the
+    # ComBat (per-biomarker) and CovBat (per-PC) test transformations.  Without
+    # it RELIEF would be the only method whose unseen vendor keeps its own
+    # location and scale, which makes its LOVO statistics incomparable.
+    if RELIEF_TEST_MATCHING:
+        S_te_matched = np.zeros_like(S_te_clean)
+        for k in range(K):
+            mu_h = S_clean[:, k].mean()
+            sd_h = S_clean[:, k].std(ddof=1)
+            mu_t = S_te_clean[:, k].mean()
+            sd_t = S_te_clean[:, k].std(ddof=1)
+            if sd_t == 0 or sd_h == 0:
+                S_te_matched[:, k] = S_te_clean[:, k] - mu_t + mu_h
+            else:
+                S_te_matched[:, k] = (S_te_clean[:, k] - mu_t) / sd_t * sd_h + mu_h
+        S_te_clean = S_te_matched
+
     # Reconstruct
     PC_te_clean = S_te_clean @ A.T
     R_te_h = PC_te_clean @ Vt[:K, :]
@@ -511,6 +534,9 @@ def run_lovo():
         hc = df[df["Pathology"].fillna("HC").str.upper().eq("HC")].copy()
     else:
         hc = df.copy()
+    # v1.3.0: restrict to the complete-case analysis sample (N=188), the
+    # same subjects as the main internal analysis
+    hc = hc.dropna(subset=BIOMARKERS + COVARIATES + [BATCH_COL])
     hc = hc.reset_index(drop=True)
 
     print(f"LOVO Validation — HC cohort, N={len(hc)}")
@@ -521,6 +547,7 @@ def run_lovo():
     all_rows = []
     perm_rows = []
     pv_rows = []
+    tv_rows = []   # v1.3.0: test-vendor-only metrics
 
     for held_out in VENDORS:
         train_vendors = [v for v in VENDORS if v != held_out]
@@ -613,10 +640,52 @@ def run_lovo():
             "LME": "_lme",
         }
 
+        # v1.7.3: persist the pooled fold samples so that the z-scored PERMANOVA
+        # (lovo_permanova_z.py) and the figure scripts read the SAME arrays as
+        # the statistics above.  These files were previously left over from an
+        # older run and silently drove Figure 4.
+        for _m, _c in methods_harm.items():
+            if _c is not None:
+                _c.to_csv(OUT_DIR / f"lovo_combined_{held_out}_{_m}.csv", index=False)
+
         for method, suf in suffix_map.items():
             combined = methods_harm.get(method)
             if combined is None:
                 continue
+
+            # ── v1.3.0: test-vendor-only metrics ────────────────────────
+            # How far does the held-out (unseen) vendor sit from the
+            # training-vendor harmonised reference, in training SD units?
+            # These metrics are well defined on the test vendor alone,
+            # complementing the pooled-sample statistics below.
+            zbar = []
+            for b in BIOMARKERS:
+                col = b + suf
+                if col not in combined.columns:
+                    continue
+                tr_vals = combined.loc[combined[BATCH_COL] != held_out, col].dropna()
+                te_vals = combined.loc[combined[BATCH_COL] == held_out, col].dropna()
+                if len(tr_vals) < 3 or len(te_vals) < 3 or tr_vals.std(ddof=1) == 0:
+                    continue
+                mu_tr, sd_tr = tr_vals.mean(), tr_vals.std(ddof=1)
+                mu_te, sd_te = te_vals.mean(), te_vals.std(ddof=1)
+                shift_sd = (mu_te - mu_tr) / sd_tr
+                var_ratio = sd_te / sd_tr
+                zbar.append(shift_sd)
+                tv_rows.append({
+                    "fold": held_out, "method": method, "biomarker": b,
+                    "shift_sd": shift_sd, "abs_shift_sd": abs(shift_sd),
+                    "var_ratio": var_ratio,
+                    "n_train": len(tr_vals), "n_test": len(te_vals),
+                })
+            if zbar:
+                summary_tv = {
+                    "fold": held_out, "method": method,
+                    "mean_abs_shift_sd": float(np.mean(np.abs(zbar))),
+                    "max_abs_shift_sd": float(np.max(np.abs(zbar))),
+                    "centroid_shift_sd": float(np.sqrt(np.sum(np.square(zbar)))),
+                }
+                tv_rows.append(summary_tv)
 
             # Per-biomarker univariate metrics
             for b in BIOMARKERS:
@@ -658,7 +727,12 @@ def run_lovo():
             cols = [b + suf for b in BIOMARKERS if (b + suf) in combined.columns]
             sub = combined[cols + [BATCH_COL]].dropna()
             if len(sub) >= 10 and sub[BATCH_COL].nunique() >= 2:
-                X = sub[cols].values
+                # v1.7.3: z-score each biomarker within the fold, as specified in
+                # Methods 2.4 and as used by the internal analysis.  Without this
+                # step the Euclidean distance is dominated by the two CSA metrics
+                # and the LOVO R^2 is not comparable with the internal R^2.
+                X = sub[cols].values.astype(float)
+                X = (X - X.mean(0)) / X.std(0, ddof=1)
                 g = sub[BATCH_COL].values
                 res = permanova(X, g, n_perm=N_PERM,
                                 rng=np.random.default_rng(0))
@@ -712,6 +786,10 @@ def run_lovo():
     long_df = pd.DataFrame(all_rows)
     long_df.to_csv(OUT_DIR / "lovo_results_long.csv", index=False)
     print(f"\n[saved] lovo_results_long.csv ({len(long_df)} rows)")
+
+    tv_df = pd.DataFrame(tv_rows)
+    tv_df.to_csv(OUT_DIR / "lovo_testvendor.csv", index=False)
+    print(f"[saved] lovo_testvendor.csv ({len(tv_df)} rows)")
 
     perm_df = pd.DataFrame(perm_rows)
     perm_df.to_csv(OUT_DIR / "lovo_permanova.csv", index=False)
