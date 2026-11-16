@@ -398,7 +398,7 @@ def gen_fig3(comp, perm):
     axes[2].scatter(best_idx_c - w/2, star_y_c, s=130, marker="*",
                     color=WONG["vermilion"], zorder=5, edgecolors="black", linewidths=0.4,
                     clip_on=False)
-    axes[2].annotate("best", xy=(best_idx_c - w/2, star_y_c),
+    axes[2].annotate("highest", xy=(best_idx_c - w/2, star_y_c),
                      xytext=(best_idx_c - w/2, star_y_c + 0.0035),
                      fontsize=7, color=WONG["vermilion"], ha="center", fontweight="bold")
 
@@ -415,7 +415,7 @@ def gen_fig3(comp, perm):
     axes[3].scatter(best_idx_d - w/2, star_y_d, s=130, marker="*",
                     color=WONG["vermilion"], zorder=5, edgecolors="black", linewidths=0.4,
                     clip_on=False)
-    axes[3].annotate("best", xy=(best_idx_d - w/2, star_y_d),
+    axes[3].annotate("highest", xy=(best_idx_d - w/2, star_y_d),
                      xytext=(best_idx_d - w/2, star_y_d + 0.0025),
                      fontsize=7, color=WONG["vermilion"], ha="center", fontweight="bold")
 
@@ -425,11 +425,11 @@ def gen_fig3(comp, perm):
     handles += [Line2D([0], [0], color=cohort_colors[c], linestyle="--",
                        linewidth=1.5, label=f"Baseline {c}") for c in cohorts]
     handles += [Line2D([0], [0], marker="*", color="w", markerfacecolor=WONG["vermilion"],
-                       markersize=10, label="Best method", markeredgecolor="black", markeredgewidth=0.4)]
+                       markersize=10, label="Highest value", markeredgecolor="black", markeredgewidth=0.4)]
     fig.legend(handles=handles, loc="upper center", ncol=5, fontsize=8.5,
                frameon=False, bbox_to_anchor=(0.5, 1.01))
 
-    fig.suptitle("Harmonization performance across evaluation endpoints",
+    fig.suptitle("Harmonisation performance across evaluation endpoints",
                  fontsize=12, fontweight="bold", y=1.02)
     fig.subplots_adjust(hspace=0.40, wspace=0.28, top=0.93, bottom=0.08, left=0.08, right=0.97)
     for fmt in ["png", "pdf"]:

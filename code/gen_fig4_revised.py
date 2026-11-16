@@ -78,7 +78,7 @@ ax3.bar(x, age_vals, color="#999999", edgecolor="k", linewidth=0.5)
 ax3.set_xticks(x)
 ax3.set_xticklabels([METHOD_LABEL[m] for m in METHODS], rotation=30, ha="right")
 ax3.set_ylabel("Age $R^2$ (mean)")
-ax3.set_title("(c) Biological Signal Preservation (Age)", fontweight="bold", fontsize=11)
+ax3.set_title("(c) Age-Associated Variance", fontweight="bold", fontsize=11)
 ax3.set_ylim(0, 0.012)
 
 # Panel D: r_pre,post on test vendor
@@ -88,7 +88,7 @@ ax4.bar(x, r_vals, color="#999999", edgecolor="k", linewidth=0.5)
 ax4.set_xticks(x)
 ax4.set_xticklabels([METHOD_LABEL[m] for m in METHODS], rotation=30, ha="right")
 ax4.set_ylabel("$r$ (pre vs post, test vendor)")
-ax4.set_title("(d) Data Distortion on Held-Out Vendor", fontweight="bold", fontsize=11)
+ax4.set_title("(d) Subject-Level Preservation on Held-Out Vendor", fontweight="bold", fontsize=11)
 ax4.set_ylim(0, 1.1)
 
 for ext in ["pdf","png"]:

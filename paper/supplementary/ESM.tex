@@ -173,7 +173,7 @@ where $b$ indexes biomarkers and $i$ subjects. This definition is consistent wit
 \end{tabular}
 \end{table}
 
-\subsection*{S5. LOVO External Validation: Protocol}
+\subsection*{S5. LOVO Transductive Validation: Protocol}
 
 \textbf{Training.} For each method, harmonisation models were fitted on subjects from two vendors (training set). The third vendor was entirely held out as test set.
 
@@ -348,6 +348,6 @@ Site (40 levels) & on & 0.0120 & 0.0446 & 0.0109 & 0.0490 & 0.703 \\
 \end{tabular}
 \end{table}
 
-Because sites are perfectly nested within vendors, site-level harmonisation also removes vendor effects, down to the chance level ($\eta^2=0.012$ vs.\ the null expectation $(k-1)/(N-1)\approx0.011$), and it removes most of the site-level variance ($0.54\rightarrow0.045$). Scanner-model harmonisation is intermediate. Site-level harmonisation recovered marginally more age- and sex-related variance than the vendor-batch fit, whereas scanner-model harmonisation was intermediate in vendor-effect removal and subject-level preservation; both finer-grained fits distorted subject rankings more than the vendor-batch fit (lower $r_{\text{pre,post}}$), and---unlike the vendor-batch fit evaluated in the LOVO framework---a site- or model-level fit offers no route to unseen vendors or unseen sites.
+Because sites are perfectly nested within vendors, site-level harmonisation also removes vendor effects, down to the chance level ($\eta^2=0.012$ vs.\ the null expectation $(k-1)/(N-1)\approx0.011$), and it removes most of the site-level variance ($0.54\rightarrow0.045$). Scanner-model harmonisation is intermediate. Site-level harmonisation recovered marginally more age- and sex-related variance than the vendor-batch fit, whereas scanner-model harmonisation was intermediate in vendor-effect removal and subject-level preservation; both finer-grained fits gave lower subject-level preservation than the vendor-batch fit in this dataset (lower $r_{\text{pre,post}}$), and---unlike the vendor-batch fit evaluated in the LOVO framework---a site- or model-level fit offers no route to unseen vendors or unseen sites.
 
 \end{document}
