@@ -1,8 +1,8 @@
 % ===================================================================
 %  Supplementary Material for:
-%  "Scanner Vendor Harmonization of Spinal Cord Quantitative MRI
+%  "Scanner Vendor Harmonisation of Spinal Cord Quantitative MRI
 %   Biomarkers: A Five-Method Benchmark"
-%  Human Brain Mapping
+%  NMR in Biomedicine
 % ===================================================================
 \documentclass[12pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
@@ -125,7 +125,7 @@ where $u_v \sim \mathcal{N}(0, \sigma_u^2)$ is the vendor-specific random interc
 
 \textbf{S4.1 Vendor $\eta^2$.} One-way ANOVA: $\eta^2 = \text{SS}_{\text{vendor}} / \text{SS}_{\text{total}}$. Reported as mean across 8 biomarkers.
 
-\textbf{S4.2 PERMANOVA.} Euclidean distance matrix on the 8-dimensional biomarker space after per-dimension z-scoring. 9,999 permutations of vendor labels. $R^2 = \text{SS}_{\text{vendor}} / \text{SS}_{\text{total}}$ from the distance-based pseudo-$F$ statistic [20]. Implementation: custom NumPy code (pseudo-$F$ and permutation loop written in-house; no third-party PERMANOVA package). On z-scored features with Euclidean distance, the multivariate $R^2$ equals the mean of the per-dimension $\eta^2$ computed on the same subjects. Because all five methods and the unharmonised baseline are fitted and evaluated on the same unified complete-case sample (HC $N=188$, ALL $N=246$), this identity holds exactly for every method, so univariate and multivariate summaries are directly comparable.
+\textbf{S4.2 PERMANOVA.} Euclidean distance matrix on the 8-dimensional biomarker space after per-dimension z-scoring. 9,999 permutations of vendor labels. $R^2 = \text{SS}_{\text{vendor}} / \text{SS}_{\text{total}}$ from the distance-based pseudo-$F$ statistic [21]. Implementation: custom NumPy code (pseudo-$F$ and permutation loop written in-house; no third-party PERMANOVA package). On z-scored features with Euclidean distance, the multivariate $R^2$ equals the mean of the per-dimension $\eta^2$ computed on the same subjects. Because all five methods and the unharmonised baseline are fitted and evaluated on the same unified complete-case sample (HC $N=188$, ALL $N=246$), this identity holds exactly for every method, so univariate and multivariate summaries are directly comparable.
 
 \textbf{S4.3 Biological $R^2$.} Type-II semi-partial $R^2$ from linear models: $\text{biomarker} \sim \text{Age} + \text{Sex}$. Reported as mean across biomarkers.
 
@@ -185,7 +185,7 @@ where $b$ indexes biomarkers and $i$ subjects. This definition is consistent wit
   \item \textbf{LME/FE:} Test-vendor offset set to 0; test-vendor values were carried through essentially untransformed (raw values, no vendor or covariate adjustment).
 \end{itemize}
 
-\textbf{Evaluation.} The same three endpoints were computed after pooling the harmonised training-vendor and held-out test-vendor data within each fold, then averaged across the 3 rotation folds. Because the transformation applied to the test vendor is per-biomarker affine (location--scale) for ComBat, ComBat-joint, and LME/FE, the test-vendor pre/post correlation equals 1.0 by construction for these methods; their preservation statistics therefore reflect the pooled sample rather than the unseen vendor in isolation. Similarly, a LOVO/internal $\eta^2$ ratio below 1 (0.9 for ComBat-joint, 0.5 for ComBat) reflects the pooled evaluation sample rather than genuine improvement on unseen vendors. For ComBat the ratio is additionally affected by the estimator: with only two training batches the empirical-Bayes variance estimate for a single biomarker is not identifiable, so the LOVO analysis fitted per-biomarker ComBat with \texttt{eb=False} while the internal analysis used \texttt{eb=True}. For CovBat and RELIEF, projection onto the training PCA/ICA basis mixes biomarker dimensions, and the test-vendor pre/post correlation fell below 1 ($r=0.85$--$0.97$ across folds), providing a genuine held-out-vendor distortion measure (Table~S6).
+\textbf{Evaluation.} The same three endpoints were computed after pooling the harmonised training-vendor and held-out test-vendor data within each fold, then averaged across the 3 rotation folds. Because the transformation applied to the test vendor is per-biomarker affine (location--scale) for ComBat, ComBat-joint, and LME/FE, the test-vendor pre/post correlation equals 1.0 by construction for these methods; their preservation statistics therefore reflect the pooled sample rather than the unseen vendor in isolation. Similarly, a LOVO/internal $\eta^2$ ratio below 1 (0.9 for ComBat-joint, 0.5 for ComBat) reflects the pooled evaluation sample rather than genuine improvement on unseen vendors. For ComBat the ratio is additionally affected by the estimator: with only two training batches the empirical-Bayes variance estimate for a single biomarker is not identifiable, so the LOVO analysis fitted per-biomarker ComBat with \texttt{eb=False} while the internal analysis used \texttt{eb=True}. For CovBat and RELIEF, projection onto the training PCA/ICA basis mixes biomarker dimensions, and the test-vendor pre/post correlation fell below 1 ($r=0.84$--$0.95$ across folds), providing a genuine held-out-vendor distortion measure (Table~S6).
 
 \textbf{Table S6.} Test-vendor-only evaluation metrics by held-out vendor and method (mean across 8 biomarkers; complete-case training sample $N=188$). |shift|: mean absolute shift of the held-out-vendor mean relative to the pooled training distribution, in training-SD units; var ratio: held-out-vendor to training variance ratio; centroid shift: multivariate centroid shift in pooled SD units; $r_{\text{pre,post}}$: test-vendor pre/post correlation. ComBat and ComBat-joint force the test-vendor distribution onto the training template (shift exactly 0 by construction); CovBat and RELIEF leave small residual shifts attributable to projection onto a lower-dimensional basis; LME/FE leaves the held-out vendor essentially untransformed.
 
@@ -323,7 +323,7 @@ Biomarkers residualised on age and sex (in-fold) & $0.563\pm0.022$ & $0.654\pm0.
 \end{tabular}
 \end{table}
 
-The harmonisation-related improvement persists, and in fact slightly increases, after removal of age and sex effects, so it is not explained by the age difference between groups. Nonetheless, because the labels are radiological rather than clinical, are age-related, were not assigned at the extracted vertebral level, and come from a single dataset, we report this endpoint as exploratory and draw no disease-related conclusion from it.
+The harmonisation-related numerical increase persists, and is slightly larger, after removing the modelled linear age and sex effects, so it is not fully explained by them; residual confounding by non-linear age effects, site or vendor composition cannot be excluded. Because the labels are radiological rather than clinical, are age-related, were not assigned at the extracted vertebral level, and come from a single dataset, we report this endpoint as exploratory and draw no disease-related conclusion from it.
 
 \subsection*{S10. Site- and Scanner-Model-Level Harmonisation}
 

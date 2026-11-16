@@ -204,8 +204,8 @@ def gen_fig1a():
 
     biomarkers = [
         ("T2w CSA", "SC cross-sectional area", "T2w", "Morphometry", "#1B9E77"),
-        ("T2* GM CSA", "Gray matter CSA", "T2*w", "GM morphometry", "#D95F02"),
-        ("MTR", "Magnetization transfer ratio", "MT", "Myelin", "#7570B3"),
+        ("T2* GM CSA", "Grey matter CSA", "T2*w", "GM morphometry", "#D95F02"),
+        ("MTR", "Magnetisation transfer ratio", "MT", "Myelin", "#7570B3"),
         ("MTsat", "MT saturation index", "MT", "Macromolecules", "#E7298A"),
         ("FA", "Fractional anisotropy", "DTI", "White-matter coherence", "#66A61E"),
         ("MD", "Mean diffusivity", "DTI", "Tissue microstructure", "#E6AB02"),
