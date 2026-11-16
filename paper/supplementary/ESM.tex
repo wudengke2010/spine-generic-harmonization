@@ -26,7 +26,7 @@
 
 \subsection*{S1. Cohort Flow and Missingness}
 
-Of 267 subjects in the spine-generic dataset (release r20231212), 203 were healthy controls (HC) and 64 had pathology (62 mild cervical compression; 2 degenerative cervical myelopathy). Both cohorts were pre-specified prior to analysis.
+Of 267 subjects in the spine-generic dataset (release r20231212), 203 were healthy controls (HC) and 64 carried radiological compression labels (62 mild cervical compression; 2 degenerative cervical myelopathy). Both cohorts were pre-specified prior to analysis.
 
 \textbf{Missingness patterns.} Among HC subjects, 15 (7.4\%) were missing one or more biomarkers: MTR ($n=9$), MTsat ($n=13$), and each of FA, MD, AD and RD ($n=5$). Among ALL subjects, 21 (7.9\%) were incomplete: MTR ($n=13$), MTsat ($n=18$), and each of FA, MD, AD and RD ($n=7$). The complete-case HC cohort comprised $N=188$ and the complete-case ALL cohort $N=246$.
 
@@ -48,7 +48,7 @@ Because several mechanisms operate through the site acquisition protocol, incomp
 Sites ($n$)         & 5 & 8 & 27 & 40 & --- \\
 Age (years)         & 28.0 $\pm$ 5.2 & 29.4 $\pm$ 4.7 & 30.0 $\pm$ 6.3 & 29.6 $\pm$ 5.9 & 0.193 \\
 Sex (\% female)      & 48.5 & 46.8 & 47.0 & 47.2 & 0.986 \\
-Pathology (HC/MC/DCM) & 25/8/0 & 33/13/1 & 130/35/1 & 188/56/2 & 0.661 \\
+Compression label (HC/MC/DCM) & 25/8/0 & 33/13/1 & 130/35/1 & 188/56/2 & 0.661 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -181,13 +181,13 @@ where $b$ indexes biomarkers and $i$ subjects. This definition is consistent wit
 \begin{itemize}[nosep]
   \item \textbf{ComBat/ComBat-joint:} Test-vendor biomarker values were z-scored to the training-vendor harmonised distribution: $y_{\text{test}}^{\text{harm}} = (y_{\text{test}} - \mu_{\text{test}}) \times (\sigma_{\text{train}}^{\text{harm}} / \sigma_{\text{test}}) + \mu_{\text{train}}^{\text{harm}}$.
   \item \textbf{CovBat:} Test-vendor residuals were projected onto training PCA space; PC scores were z-score matched to training PC-score distribution.
-  \item \textbf{RELIEF:} Test-vendor residuals were projected onto training ICA space via $\text{inv}(A^T)$; batch-flagged components were zeroed using the training-vendor flag set.
+  \item \textbf{RELIEF:} Test-vendor residuals were projected onto training ICA space via $\text{inv}(A^T)$; batch-flagged components were zeroed using the training-vendor flag set, after which the resulting independent-component scores were z-score matched to the harmonised training-vendor component distribution, exactly as CovBat does in PC space. This matching is required for comparability: without it RELIEF would be the only pipeline whose held-out vendor retains its own location and scale.
   \item \textbf{LME/FE:} Test-vendor offset set to 0; test-vendor values were carried through essentially untransformed (raw values, no vendor or covariate adjustment).
 \end{itemize}
 
-\textbf{Evaluation.} The same three endpoints were computed after pooling the harmonised training-vendor and held-out test-vendor data within each fold, then averaged across the 3 rotation folds. Because the transformation applied to the test vendor is per-biomarker affine (location--scale) for ComBat, ComBat-joint, and LME/FE, the test-vendor pre/post correlation equals 1.0 by construction for these methods; their preservation statistics therefore reflect the pooled sample rather than the unseen vendor in isolation. Similarly, the LOVO/internal $\eta^2$ ratio below 1 for ComBat-joint reflects the pooled evaluation sample rather than genuine improvement on unseen vendors. For CovBat and RELIEF, projection onto the training PCA/ICA basis mixes biomarker dimensions, and the test-vendor pre/post correlation fell below 1 ($r=0.85$--$0.97$ across folds), providing a genuine held-out-vendor distortion measure (Table~S6).
+\textbf{Evaluation.} The same three endpoints were computed after pooling the harmonised training-vendor and held-out test-vendor data within each fold, then averaged across the 3 rotation folds. Because the transformation applied to the test vendor is per-biomarker affine (location--scale) for ComBat, ComBat-joint, and LME/FE, the test-vendor pre/post correlation equals 1.0 by construction for these methods; their preservation statistics therefore reflect the pooled sample rather than the unseen vendor in isolation. Similarly, a LOVO/internal $\eta^2$ ratio below 1 (0.9 for ComBat-joint, 0.5 for ComBat) reflects the pooled evaluation sample rather than genuine improvement on unseen vendors. For ComBat the ratio is additionally affected by the estimator: with only two training batches the empirical-Bayes variance estimate for a single biomarker is not identifiable, so the LOVO analysis fitted per-biomarker ComBat with \texttt{eb=False} while the internal analysis used \texttt{eb=True}. For CovBat and RELIEF, projection onto the training PCA/ICA basis mixes biomarker dimensions, and the test-vendor pre/post correlation fell below 1 ($r=0.85$--$0.97$ across folds), providing a genuine held-out-vendor distortion measure (Table~S6).
 
-\textbf{Table S6.} Test-vendor-only evaluation metrics by held-out vendor and method (mean across 8 biomarkers; complete-case training sample $N=188$). |shift|: mean absolute shift of the held-out-vendor mean relative to the pooled training distribution, in training-SD units; var ratio: held-out-vendor to training variance ratio; centroid shift: multivariate centroid shift in pooled SD units; $r_{\text{pre,post}}$: test-vendor pre/post correlation. ComBat and ComBat-joint force the test-vendor distribution onto the training template (shift exactly 0 by construction); CovBat leaves small residual shifts; RELIEF and LME/FE leave the held-out vendor shifted relative to training.
+\textbf{Table S6.} Test-vendor-only evaluation metrics by held-out vendor and method (mean across 8 biomarkers; complete-case training sample $N=188$). |shift|: mean absolute shift of the held-out-vendor mean relative to the pooled training distribution, in training-SD units; var ratio: held-out-vendor to training variance ratio; centroid shift: multivariate centroid shift in pooled SD units; $r_{\text{pre,post}}$: test-vendor pre/post correlation. ComBat and ComBat-joint force the test-vendor distribution onto the training template (shift exactly 0 by construction); CovBat and RELIEF leave small residual shifts attributable to projection onto a lower-dimensional basis; LME/FE leaves the held-out vendor essentially untransformed.
 
 \vspace{4mm}
 \begin{table}[H]
@@ -201,7 +201,7 @@ where $b$ indexes biomarkers and $i$ subjects. This definition is consistent wit
   & ComBat & 0.00 & 1.00 & 0.00 & 1.000 \\
   & ComBat-joint & 0.00 & 1.00 & 0.00 & 1.000 \\
   & CovBat & 0.03 & 0.94 & 0.12 & 0.851 \\
-  & RELIEF & 1.64 & 1.12 & 5.97 & 0.925 \\
+  & RELIEF & 0.03 & 0.77 & 0.12 & 0.835 \\
   & LME/FE & 1.62 & 1.08 & 5.92 & 1.000 \\
 \midrule
 \multirow{6}{*}{Philips} 
@@ -209,7 +209,7 @@ where $b$ indexes biomarkers and $i$ subjects. This definition is consistent wit
   & ComBat & 0.00 & 1.00 & 0.00 & 1.000 \\
   & ComBat-joint & 0.00 & 1.00 & 0.00 & 1.000 \\
   & CovBat & 0.03 & 1.00 & 0.10 & 0.949 \\
-  & RELIEF & 0.85 & 0.97 & 2.69 & 0.973 \\
+  & RELIEF & 0.03 & 0.93 & 0.10 & 0.939 \\
   & LME/FE & 0.92 & 0.99 & 3.14 & 1.000 \\
 \midrule
 \multirow{6}{*}{Siemens} 
@@ -217,13 +217,13 @@ where $b$ indexes biomarkers and $i$ subjects. This definition is consistent wit
   & ComBat & 0.00 & 1.00 & 0.00 & 1.000 \\
   & ComBat-joint & 0.00 & 1.00 & 0.00 & 1.000 \\
   & CovBat & 0.05 & 0.96 & 0.16 & 0.911 \\
-  & RELIEF & 1.42 & 1.24 & 4.54 & 0.960 \\
+  & RELIEF & 0.05 & 0.98 & 0.16 & 0.930 \\
   & LME/FE & 1.39 & 1.13 & 4.51 & 1.000 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection*{S6. Design C Subsample Analyses (Reduced Imbalance and Equal-n)}
+\subsection*{S6. Subsample Analyses: Reduced Imbalance and Equal-n}
 
 To isolate the effect of vendor imbalance, two subsample designs were analysed in the HC cohort (20 random seeds each, all five methods refitted per subset using the same canonical implementations as the main analysis; subject-level preservation is reported as the pooled $r_{\text{pre,post}}$, the same metric as Table~3 of the main text). The reduced-imbalance design restricted Siemens to 40 randomly drawn subjects per seed while retaining all GE and Philips subjects (GE 25, Philips 33, Siemens 40; $n\approx98$ per subset; residual imbalance $\max/\min=1.60$ vs.\ $5.2$ in the full analysis). The true-equal-$n$ sensitivity design drew 25 subjects per vendor ($n=75$; imbalance ratio $=1.00$). Vendor $\eta^2$, PERMANOVA $R^2$, pooled and within-vendor subject-level preservation, and age-signal recovery were recomputed per seed.
 
@@ -240,7 +240,7 @@ In the reduced-imbalance design the pooled-$r$ preservation hierarchy was retain
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{FigS2_designC.pdf}
-\caption{Design C subsample analyses: reduced-imbalance and true-equal-n designs (HC cohort, 20 random seeds each; all methods refitted per subset). \textbf{(a)} Pooled subject-level preservation ($r_{\text{pre,post}}$, the main-text Table~3 metric): reduced-imbalance subsample (Siemens restricted to 40 subjects per seed, all GE and Philips subjects retained; $n\approx98$ per subset; imbalance ratio $1.60$) and true-equal-$n$ subsample (25 subjects per vendor, $n=75$, ratio $1.00$); dashed lines mark the full-cohort reference values. \textbf{(b)} Within-vendor subject-ranking preservation (Pearson $r$ computed within each vendor group; equal to 1 for pure location-shift methods by construction). \textbf{(c)} Vendor effect size ($\eta^2$) on logarithmic scale; the dashed line marks the unharmonised subsample baseline (mean $\eta^2\approx0.37$--$0.39$). The pooled-$r$ preservation hierarchy was retained in both designs (reduced imbalance: LME/FE $0.779\pm0.011$, ComBat-joint $0.773\pm0.014$, RELIEF $0.760\pm0.015$, CovBat $0.749\pm0.016$, ComBat $0.745\pm0.015$; equal-$n$: LME/FE $0.772\pm0.015$, ComBat-family $0.732$--$0.768$), with absolute values below the full cohort ($0.782$--$0.816$) because the subsamples carry a higher baseline vendor-variance fraction; within-vendor rankings were preserved near-perfectly by every method (mean $r\geq0.97$).}
+\caption{Subsample analyses: reduced-imbalance and true-equal-n designs (HC cohort, 20 random seeds each; all methods refitted per subset). \textbf{(a)} Pooled subject-level preservation ($r_{\text{pre,post}}$, the main-text Table~3 metric): reduced-imbalance subsample (Siemens restricted to 40 subjects per seed, all GE and Philips subjects retained; $n\approx98$ per subset; imbalance ratio $1.60$) and true-equal-$n$ subsample (25 subjects per vendor, $n=75$, ratio $1.00$); dashed lines mark the full-cohort reference values. \textbf{(b)} Within-vendor subject-ranking preservation (Pearson $r$ computed within each vendor group; equal to 1 for pure location-shift methods by construction). \textbf{(c)} Vendor effect size ($\eta^2$) on logarithmic scale; the dashed line marks the unharmonised subsample baseline (mean $\eta^2\approx0.37$--$0.39$). The pooled-$r$ preservation hierarchy was retained in both designs (reduced imbalance: LME/FE $0.779\pm0.011$, ComBat-joint $0.773\pm0.014$, RELIEF $0.760\pm0.015$, CovBat $0.749\pm0.016$, ComBat $0.745\pm0.015$; equal-$n$: LME/FE $0.772\pm0.015$, ComBat-family $0.732$--$0.768$), with absolute values below the full cohort ($0.782$--$0.816$) because the subsamples carry a higher baseline vendor-variance fraction; within-vendor rankings were preserved near-perfectly by every method (mean $r\geq0.97$).}
 \end{figure}
 
 \begin{figure}[H]
@@ -290,23 +290,25 @@ The following data files are provided:
   \item \texttt{permanova\_results.csv}: PERMANOVA results (HC and ALL cohorts)
   \item \texttt{bootstrap\_r\_ci\_cc.csv} / \texttt{bootstrap\_eta2\_baseline\_cc.csv}: Bootstrap 95\% confidence intervals for $r_{\text{pre,post}}$ and baseline $\eta^2$ ($B=2{,}000$, stratified by vendor)
   \item \texttt{bootstrap\_paired\_r.csv}: Paired bootstrap tests of $r_{\text{pre,post}}$ differences between method pairs (20 rows; Supplementary Table~S7)
-  \item \texttt{ml\_leakfree\_summary.csv}: Fold-internal machine-learnability summary (vendor, pathology, and sex AUC by method and cohort)
+  \item \texttt{ml\_leakfree\_summary.csv}: Fold-internal machine-learnability summary (vendor, compression-label, and sex AUC by method and cohort)
   \item \texttt{ml\_leakfree\_vendorclass.csv}: Per-vendor one-vs-rest AUC after fold-internal harmonisation (Supplementary Table~S8)
-  \item \texttt{ml\_leakfree\_paired.csv}: Paired comparison of pathology AUC (Original vs each method, within-resample)
+  \item \texttt{ml\_leakfree\_paired.csv}: Paired comparison of compression-label AUC (Original vs each method, within-resample)
   \item \texttt{lovo\_permanova\_z.csv}: Z-scored PERMANOVA results for the LOVO pooled evaluation sample
-  \item \texttt{r1\_age\_confound.csv}: Age-confounding sensitivity analysis of the pathology-label classification (Supplementary Material~S9)
+  \item \texttt{r1\_age\_confound.csv}: Age-confounding sensitivity analysis of the compression-label classification (Supplementary Material~S9)
   \item \texttt{r1\_site\_harmonization.csv}: ComBat with site and scanner-model batch variables (Supplementary Material~S10)
+  \item \texttt{r1\_age\_confound\_infold.csv}: Compression-label classification after in-fold residualisation on age and sex (Supplementary Material~S9)
+  \item \texttt{r1\_relief\_lovo\_match.csv}: RELIEF LOVO vendor $\eta^2$ under the published and the distribution-matched test-vendor protocols (Supplementary Material~S5)
 \end{itemize}
 
 The analysis code is available at \url{https://github.com/wudengke2010/spine-generic-harmonization}.
 
-\subsection*{S9. Age Confounding of the Radiological Pathology Labels}
+\subsection*{S9. Age Confounding of the Radiological Compression Labels}
 
-The pathology labels are radiological assessments of mostly mild cervical compression [3], and mild compression is age-related. We therefore quantified how far the exploratory pathology classification (main text, Section~3.3) is explained by age.
+The compression labels are radiological assessments of mostly mild cervical compression [3], and mild compression is age-related. We therefore quantified how far the exploratory compression-label classification (main text, Section~3.3) is explained by age.
 
-In the ALL complete-case cohort ($N=246$; 58 label-positive, 188 controls), labelled subjects were older (median 34.0 vs.\ 28.0 years; Mann--Whitney $p=2.0\times10^{-7}$). Age alone discriminated the labels with AUC $=0.725$, and a linear age+sex score gave AUC $=0.725$ (sex alone: $0.53$)---above every biomarker-based classifier in the main analysis. To test whether the post-harmonisation improvement in biomarker-based classification merely reflects this age confounding, we residualised each of the eight biomarkers on age and sex (OLS) and repeated the identical leakage-free classification protocol (random forest, 5-fold $\times$ 20 repeats, harmonisation refit within each fold):
+In the ALL complete-case cohort ($N=246$; 58 label-positive, 188 controls), labelled subjects were older (median 34.0 vs.\ 28.0 years; Mann--Whitney $p=2.0\times10^{-7}$). Age alone discriminated the labels with AUC $=0.725$, and a linear age+sex score gave AUC $=0.725$ (sex alone: $0.53$)---above every biomarker-based classifier in the main analysis. To test whether the post-harmonisation improvement in biomarker-based classification merely reflects this age confounding, we residualised each of the eight biomarkers on age and sex (OLS) and repeated the identical leakage-free classification protocol (random forest, 5-fold $\times$ 20 repeats, harmonisation refit within each fold). The residualisation coefficients were estimated on the training folds only, so that no test-fold information enters the transformation:
 
-\textbf{Table S9.} Pathology-label classification before and after residualising the biomarkers on age and sex (leakage-free protocol identical to the main analysis; mean $\pm$ SD AUC over 20 repeats).
+\textbf{Table S9.} Compression-label classification before and after residualising the biomarkers on age and sex (leakage-free protocol identical to the main analysis; mean $\pm$ SD AUC over 20 repeats; residualisation coefficients fitted within training folds).
 
 \begin{table}[H]
 \centering
@@ -316,7 +318,7 @@ In the ALL complete-case cohort ($N=246$; 58 label-positive, 188 controls), labe
 \textbf{Features} & \textbf{Original} & \textbf{ComBat} \\
 \midrule
 All eight biomarkers (main analysis) & $0.520\pm0.024$ & $0.625\pm0.018$ \\
-Biomarkers residualised on age and sex & $0.565\pm0.027$ & $0.655\pm0.021$ \\
+Biomarkers residualised on age and sex (in-fold) & $0.563\pm0.022$ & $0.654\pm0.022$ \\
 \bottomrule
 \end{tabular}
 \end{table}
