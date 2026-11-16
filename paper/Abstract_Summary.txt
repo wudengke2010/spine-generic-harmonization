@@ -14,5 +14,5 @@ CONCLUSION: For pooled multi-vendor spinal cord qMRI datasets of comparable stru
 
 KEYWORDS: Spinal cord; Quantitative MRI; Harmonisation; ComBat; Multicentre study; Reproducibility; Scanner vendor effects
 
-WORD COUNT (main text): approximately 6,400 (Introduction to Discussion; excluding abstract, key points, references, tables and figure captions)
+WORD COUNT (main text): approximately 6,500 (Introduction to Discussion; excluding abstract, key points, references, tables and figure captions)
 ABSTRACT SUMMARY: approximately 260 words including the four structured headings (journal limit: 300)
