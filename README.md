@@ -14,7 +14,7 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 - https://github.com/spine-generic/data-multi-subject
 
 - 267 subjects, 43 sites (institution level, participants.tsv), 3 vendors (GE, Philips, Siemens)
-- 8 qMRI biomarkers at C2–C3: T2w CSA, T2\* GM CSA, MTR, MTsat, FA, MD, AD, RD
+- 8 qMRI biomarkers: T2w CSA, T2\* GM CSA, MTR, MTsat, FA, MD, AD, RD (seven sampled at C2–C3; GM-CSA averaged over the full cord — see manuscript Section 2.1)
 
 **Per-subject measurements** (`data/per_subject/`) are the direct SCT v7.4 output computed from the spine-generic derivatives: `csa_t2star/` holds one summary CSV per subject (SC/GM/WM CSA), and `csa_t2w/` holds the slice-level `sct_process_segmentation` output (per-slice area, angles, diameters). These are the raw inputs consumed by the analysis scripts in `code/`.
 
@@ -23,7 +23,7 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 ```
 .
 ├── code/                           # Analysis and figure-generation scripts
-│   ├── lovo_validation.py          # Leave-one-vendor-out (LOVO) external validation
+│   ├── lovo_validation.py          # Leave-one-vendor-out (LOVO) transductive validation
 │   ├── generate_lovo_figure.py     # LOVO validation figure generation
 │   ├── generate_all_figures_final.py  # Final manuscript figure pipeline (Figs 1–5, FigS)
 │   ├── fix_lovo_rprepost.py        # LOVO R-pre/R-post statistic computation
@@ -67,7 +67,9 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 │   ├── t2w_by_vertebral_level.csv
 │   ├── t2w_csa_data.csv
 │   ├── voxel_resolution_by_vendor.csv
-│   ├── lovo_vs_internal_comparison.csv  # LOVO vs internal-validation results
+│   ├── lovo_summary.csv           # LOVO validation results by method and held-out vendor (v1.7.3 rerun)
+│   ├── lovo_testvendor.csv         # Held-out-vendor shifts and correlations per fold/method/biomarker
+│   ├── lovo_per_vendor.csv         # Per-vendor LOVO detail (fold-wise r ranges)
 │   ├── results_design_C.csv        # Design C balanced-subsample bootstrap results
 │   ├── summary_design_C.csv        # Design C summary statistics
 │   ├── ml_auc_summary.csv          # ML vendor-signature AUC, ALL cohort (N=246)
@@ -76,7 +78,14 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 │   ├── ml_leakfree_long.csv        # Per-repetition fold-internal ML results
 │   ├── ml_leakfree_paired.csv      # Paired bootstrap tests between methods
 │   ├── ml_leakfree_vendorclass.csv # Per-vendor classification AUC
-│   ├── ml_leakfree_hmci.csv        # Pathology-label HM AUC with CIs
+│   ├── ml_leakfree_hmci.csv        # Compression-label AUC with CIs (exploratory; age-confounded)
+│   ├── r1_age_confound.csv         # Age-confounding sensitivity of compression-label AUC (S9)
+│   ├── r1_age_confound_infold.csv  # AUC after in-fold age/sex residualisation (S9)
+│   ├── r1_relief_lovo_match.csv    # RELIEF LOVO under published vs distribution-matched protocols (S5)
+│   ├── r1_site_harmonization.csv   # ComBat with site/scanner-model batch variables (S10)
+│   ├── comparison_long.csv         # Per-biomarker metrics, all methods/cohorts, unified complete-case
+│   ├── cc_summary.csv              # Method-level summary of comparison_long.csv
+│   ├── demographics_completecase.csv # Complete-case demographics (Table 1 / S1)
 │   ├── cc_fit_summary.csv          # Complete-case fit summary per method x cohort x biomarker (LME convergence, eta2)
 │   ├── lovo_permanova_z.csv        # LOVO PERMANOVA with z-score standardisation (v1.4.0)
 │   ├── lovo_permanova_z_identity_check.csv  # Identity check for the z-standardised LOVO analysis
@@ -101,10 +110,11 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 │   ├── Fig5_rpre_post_marginals.{png,pdf}
 │   ├── fig_lovo_validation.{png,pdf}
 │   ├── FigS_design_C_robustness.{png,pdf}
-│   └── FigS4_covariance.{pdf,png,svg}  # Cross-metric covariance + Frobenius distance (Supplementary Fig. S4)
-├── paper/                          # Manuscript source files (HBM submission version)
+│   ├── FigS4_covariance.{pdf,png,svg}  # Cross-metric correlation matrices + Frobenius distance (Supplementary Fig. S4)
+│   └── GraphicalAbstract.pdf       # Graphical abstract (Table of Contents)
+├── paper/                          # Manuscript source files (NMR in Biomedicine submission version)
 │   ├── main_text.tex               # Main manuscript (LaTeX source)
-│   ├── main_text.pdf               # Compiled manuscript (19 pages)
+│   ├── main_text.pdf               # Compiled manuscript (28 pages)
 │   ├── figures/                    # Main-text figures (Fig1–Fig4, vector PDF)
 │   └── supplementary/              # ESM.tex/pdf + supplementary figures FigS1–S4
 ├── LICENSE                         # MIT License
@@ -122,14 +132,19 @@ The analysis uses the **spine-generic multi-subject dataset** (release r20231212
 
 | Method | Description |
 |--------|-------------|
-| ComBat | Per-metric empirical Bayes batch correction |
-| ComBat-joint | Joint estimation across all biomarkers |
+| ComBat | Per-metric location-and-scale correction without empirical-Bayes pooling (eb=False) |
+| ComBat-joint | Joint estimation with a single EB prior shared across biomarkers (eb=True); covariance not explicitly modelled |
 | CovBat | Covariance batch harmonization |
 | RELIEF | Removal of latent inter-scanner effects via ICA |
 | LME/FE | Linear mixed-effects / fixed-effects hybrid model |
 
 ## Version History
 
+- **v1.7.7** — Pre-resubmission consistency pass: ComBat EB description corrected to match the code (per-metric ComBat uses eb=False in both the internal and LOVO analyses; the earlier claim that the internal analysis used eb=True was wrong); ComBat-joint re-described (single EB prior shared across biomarkers; cross-metric covariance not explicitly modelled); "covariance structure" terminology aligned to "correlation structure" where correlation matrices are meant; graphical abstract redrawn to match the revised conclusions; Declarations consent-for-publication wording corrected; repository data cleaned (stale lovo_vs_internal_comparison.csv removed; manuscript CSVs documented; correspondence synced to the resubmission versions).
+- **v1.7.6** — Word-by-word final check: LOVO fold-wise r range corrected to 0.84–0.95; LOVO PERMANOVA floor stated as p>0.99; missingness double-count clarified (21 unique subjects); introduction citations redistributed; ESM PERMANOVA citation fixed; Fig 1 British spellings.
+- **v1.7.5** — Table 3 LOVO columns resynced to the protocol-symmetric v1.7.3 rerun (ComBat 1.84e-04, ratio 0.5; RELIEF 8.86e-04, ratio 2.0; LME/FE 1.99e-01, ratio 250); data/lovo_*.csv refreshed; figure panel titles aligned with captions.
+- **v1.7.4** — Terminology pass: compression labels replace pathology labels throughout; "improved" softened to "numerically higher"; LOVO described as transductive validation; conclusions hedged.
+- **v1.7.3** — LOVO protocol symmetry: RELIEF held-out-vendor pathway switched to test-vendor distribution matching; LOVO results rerun; tracked-changes PDF generated.
 - **v1.5.1** — Fifth-revision (minor) submission package. Figure 3 (Pareto frontier) regenerated with the leader-line method labels removed (single figure-level legend; the previous redraw had introduced label overflow and a duplicated "CovBat" overprinting the x-axis title) and an in-panel "compressed x-axis range" note in panel (b) plus a matching caption sentence. Measured baseline η² of both Design C subsample designs reported with seed-wise ranges and the explicit √(1−η²) pooled-r ceiling (reduced-imbalance 0.374 → ≈0.79; true-equal-n 0.389 → ≈0.78), plus a per-seed verification that LME/FE pooled r never exceeded the per-seed ceiling in any of the 20 seeds of either design (ESM S6). Long-sentence restructuring in Methods (LOVO), Results (covariance, Design C, LOVO) and a three-way split of the Limitations paragraph.
 - **v1.5.0** — Fourth-revision (minor) submission package. Design C subsample analysis rebuilt on the paper-canonical pooled-r metric (`step6_design_C_via_paper_scripts.py` v2; the previously reported within-vendor-based LME/FE r = 0.843 was not reproducible from the canonical code and is superseded): pooled-r hierarchy retained under both the reduced-imbalance design (n≈98/seed; LME/FE 0.779, ComBat-joint 0.773, RELIEF 0.760, CovBat 0.749, ComBat 0.745) and a new true-equal-n sensitivity design (`step6_design_C_equaln.py`, 25 subjects/vendor, n=75; LME/FE 0.772, ComBat-family 0.732–0.768); terminology "balanced conditions" → "reduced-imbalance subsample"; Frobenius distances normalised by ‖R_orig‖_F (HC 38.1–41.3%, ALL 40.2–43.0%); LOVO r = 0.85–0.97 disambiguated as per-fold range with fold means 0.90/0.95; Fig 1A site/scanner-model scope annotated (43 sites · 13 models, full dataset); Fig 4B baseline asterisks removed; Fig 3 caption panel letters lower-cased; Word manuscript regenerated (caption numbering prefixes, numbered section headings, recomputed app.xml statistics, pandoc-residue styles removed).
 - **v1.4.2** — Third-revision (minor) submission package. All analyses unified on the complete-case cohorts (N=188 HC / N=246 ALL). Fold-internal (leak-free) machine-learnability promoted to primary ML endpoint (`ml_fold_internal.py`, `ml_leakfree_*.csv`); LOVO PERMANOVA z-score standardisation (`lovo_permanova_z.py`, `lovo_permanova_z.csv`); Design C protocol description corrected (Siemens restricted to 40 per seed, all GE 25 + Philips 33 retained, n≈98 per seed, 20 random seeds) and FigS2 regenerated from the authoritative results (LME/FE mean r = 0.843); site counts harmonised to institution level (43 dataset / 40 analysis); numerical corrections (RELIEF LOVO ratio 428; non-diffusion age p ≥ 0.18); ESM Table S8 (per-vendor AUC) rendering fixed; paper/ restructured to the submission manuscript (main_text + supplementary).

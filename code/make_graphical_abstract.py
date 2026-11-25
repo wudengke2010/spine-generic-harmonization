@@ -72,11 +72,11 @@ for i, m in enumerate(methods):
 ax0.annotate("", xy=(9.0, 3.55), xytext=(2.0, 3.55),
              arrowprops=dict(arrowstyle="-|>", color=TEAL, lw=2.4))
 ax0.text(0.4, 2.7, "Harmonised biomarkers", fontsize=13.5, fontweight="bold", color=DGRAY)
-ax0.text(0.4, 2.05, "Comparable across sites & vendors",
+ax0.text(0.4, 2.05, "Vendor effects reduced, but residual vendor signatures remain.",
          fontsize=11.5, color=GRAY)
 
 # --- bottom: preservation note ---
-ax0.text(0.4, 1.05, "Subject ranking and age/sex effects preserved",
+ax0.text(0.4, 1.05, "Subject-ranking preservation and age/sex associations were evaluated",
          fontsize=11.5, color=AMBER, fontweight="bold")
 
 # ============================================================
@@ -92,8 +92,8 @@ ax1.set_facecolor("white")
 pts = {
     "Original":    (0.06, 1.00, GRAY,  "o", 0.06, 1.075, "center"),
     "LME/FE":      (0.16, 0.86, TEAL,  "o", 0.16, 0.94,  "center"),
-    "ComBat-joint":(0.46, 0.80, AMBER, "D", 0.40, 0.71,  "right"),
-    "RELIEF":      (0.54, 0.69, TEAL,  "o", 0.54, 0.60,  "center"),
+    "ComBat-joint":(0.46, 0.80, AMBER, "D", 0.46, 0.87,  "center"),
+    "RELIEF":      (0.54, 0.69, TEAL,  "o", 0.54, 0.585, "center"),
     "ComBat":      (0.60, 0.66, TEAL,  "o", 0.68, 0.66,  "left"),
     "CovBat":      (0.88, 0.55, TEAL,  "o", 0.88, 0.46,  "center"),
 }
@@ -111,7 +111,7 @@ ax1.plot([0.06, 0.16, 0.46, 0.54, 0.60, 0.88],
 # axes labels
 ax1.set_xlabel("Vendor-effect removal  →", fontsize=12.5, color=DGRAY, fontweight="bold")
 ax1.set_ylabel("Subject-level\npreservation  →", fontsize=12.5, color=DGRAY, fontweight="bold")
-ax1.set_xlim(-0.02, 1.15); ax1.set_ylim(0.30, 1.15)
+ax1.set_xlim(-0.02, 1.15); ax1.set_ylim(0.30, 1.22)
 ax1.set_xticks([]); ax1.set_yticks([])
 for s in ax1.spines.values():
     s.set_color(GRAY); s.set_linewidth(1.0)
@@ -123,8 +123,8 @@ ax1.set_title("Decontamination–preservation trade-off", fontsize=13,
 # bottom banner
 # ============================================================
 fig.text(0.5, 0.035,
-         "ComBat-joint offers the most favourable trade-off in this dataset; "
-         "LME/FE preserves rankings but cannot centre an unseen vendor",
+         "ComBat-joint offered a favourable balance in this dataset; LME/FE failed to centre "
+         "the held-out vendor under the specified transductive rule",
          fontsize=12.5, color=DGRAY, ha="center", fontweight="bold")
 
 for ext in ("png", "pdf"):
